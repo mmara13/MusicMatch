@@ -1,0 +1,54 @@
+﻿@model UserPreferencesForm
+<h2>Edit Your Preferences</h2>
+<form method="post">
+    <div class="form-group">
+        <label for="songs">Favorite Songs (select up to 10):</label>
+        @if (ViewBag.LikedSongs != null && ((IEnumerable<Song>)ViewBag.LikedSongs).Count() > 0)
+        {
+            <select id="songs" name="UserPreferencesSongs" class="form-control" multiple size="10">
+                @foreach (var song in ViewBag.LikedSongs)
+                {
+                    <option value="@song.Id"
+                            selected="@(Model.UserPreferencesSongs.Any(ups => ups.SongId == song.Id))">
+                        @song.Title
+                    </option>
+                }
+            </select>
+        }
+        else
+        {
+            <p>You have not liked any songs yet.</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="artists">Favorite Artists:</label>
+        @if (ViewBag.LikedArtists != null && ((IEnumerable<Artist>)ViewBag.LikedArtists).Count() > 0)
+        {
+            <div class="artist-container">
+                @foreach (var artist in ViewBag.LikedArtists)
+                {
+                    <div class="artist-card">
+                        <input type="checkbox" id="artist-@artist.Id" name="UserPreferencesArtists" value="@artist.Id"
+                        @(Model.UserPreferencesArtists.Any(upa => upa.ArtistId == artist.Id) ? "checked" : "") />
+                        <label for="artist-@artist.Id">
+                            <img src="@artist.ProfileImageUrl" alt="@artist.Name" class="artist-image" />
+                            <p class="artist-name">@artist.Name</p>
+                        </label>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>You have not liked any artists yet.</p>
+        }
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-primary">Save Preferences</button>
+    <!-- cancel button -->
+    <a href="@Url.Action("Details", "Profiles", new { id = Model.User.Id })" class="text-gray-400 hover:text-white transition-colors">
+        Cancel
+    </a>
+</form>

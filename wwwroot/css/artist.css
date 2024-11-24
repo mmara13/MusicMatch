@@ -1,0 +1,31 @@
+.artist-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.artist-card {
+    text-align: center;
+    width: 100px;
+}
+
+.artist-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.artist-name {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+#artist-list input[type="checkbox"] {
+    display: none;
+}
+
+label {
+    cursor: pointer;
+}

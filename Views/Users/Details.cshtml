@@ -1,0 +1,36 @@
+﻿@model MusicMatch.Models.ApplicationUser
+
+<h2>@Model.FirstName @Model.LastName's Profile</h2>
+@if (!string.IsNullOrEmpty(Model.PhotoUrl))
+{
+    <img src="@Model.PhotoUrl" alt="Profile Photo" class="img-thumbnail" width="150" />
+}
+else
+{
+    <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp" alt="Default Profile Photo" class="img-thumbnail" width="150" />
+}
+<h3>Favorite Genres</h3>
+<ul>
+    @foreach (var genre in Model.FavoriteGenres)
+    {
+        <li>@genre.Genre?.Name</li>
+    }
+</ul>
+
+<h3>Favorite Artists</h3>
+<ul>
+    @foreach (var artist in Model.FavoriteArtists)
+    {
+        <li>@artist.Artist?.Name</li>
+    }
+</ul>
+
+<h3>Recent Activities</h3>
+<ul>
+    @foreach (var activity in Model.RecentActivities.OrderByDescending(a => a.Timestamp).Take(10))
+    {
+        <li>@activity.ActivityType - @activity.ActivityDetails</li>
+    }
+</ul>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Users</a>

@@ -1,0 +1,136 @@
+﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
+@model MusicMatch.Models.ApplicationUser
+
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+
+
+<div class="bg-gradient-to-b from-gray-900 to-black min-h-screen text-white">
+    <div class="container mx-auto px-4 pt-8">
+        <div class="flex items-start gap-8">
+            <!-- Profile Image Section -->
+            <div class="relative group">
+                <div class="w-48 h-48 rounded-full overflow-hidden shadow-xl">
+                    @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+                    {
+                        <img src="@Model.PhotoUrl" alt="Profile Photo" class="w-full h-full object-cover" id="profile-image" />
+                    }
+                    else
+                    {
+                        <div class="w-full h-full bg-gray-700 flex items-center justify-center" id="profile-image-placeholder">
+                            <svg class="w-24 h-24 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-6.627 0-12 3.373-12 7.5 0 .524.168 1.057.431 1.5h23.138c.263-.443.431-.976.431-1.5 0-4.127-5.373-7.5-12-7.5z" />
+                            </svg>
+                        </div>
+                    }
+                </div>
+                <label for="photo" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 cursor-pointer rounded-full transition-opacity">
+                    <span class="text-white font-medium">Change Photo</span>
+                </label>
+            </div>
+
+            <!-- Profile Info Section -->
+            <div class="flex-1">
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="bg-red-500 text-white p-4 rounded-md mb-4" role="alert">
+                        @TempData["ErrorMessage"]
+                    </div>
+                }
+
+                @if (TempData["Message"] != null)
+                {
+                    <div class="bg-green-500 text-white p-4 rounded-md mb-4" role="alert" id="successMessage">
+                        @TempData["Message"]
+                    </div>
+                }
+
+                @if (ViewData.ModelState.ErrorCount > 0)
+                {
+                    <div class="bg-red-500 text-white p-4 rounded-md mb-4" role="alert">
+                        <div asp-validation-summary="All" class="text-white"></div>
+                    </div>
+                }
+
+                <form method="post" enctype="multipart/form-data" asp-action="Edit" asp-controller="Profiles" class="space-y-6">
+                    @Html.AntiForgeryToken()
+                    <input type="file" id="photo" name="photo" class="hidden" accept="image/*" />
+                    <input type="hidden" asp-for="PhotoUrl" />
+                    <input type="hidden" asp-for="Id" />
+
+                    <div>
+                        <h6 class="text-sm font-medium text-gray-400">Edit Profile</h6>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label asp-for="FirstName" class="block text-sm font-medium text-gray-400">First Name</label>
+                            <input asp-for="FirstName" class="mt-1 w-full bg-gray-800 text-white text-xl border-none focus:ring-2 focus:ring-green-500 rounded-md" />
+                            <span asp-validation-for="FirstName" class="text-red-500 text-sm"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="LastName" class="block text-sm font-medium text-gray-400">Last Name</label>
+                            <input asp-for="LastName" class="mt-1 w-full bg-gray-800 text-white text-xl border-none focus:ring-2 focus:ring-green-500 rounded-md" />
+                            <span asp-validation-for="LastName" class="text-red-500 text-sm"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Email" class="block text-sm font-medium text-gray-400">Email</label>
+                            <input asp-for="Email" class="mt-1 w-full bg-gray-800 text-white text-xl border-none focus:ring-2 focus:ring-green-500 rounded-md" />
+                            <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="PhoneNumber" class="block text-sm font-medium text-gray-400">Phone Number</label>
+                            <input asp-for="PhoneNumber" class="mt-1 w-full bg-gray-800 text-white text-xl border-none focus:ring-2 focus:ring-green-500 rounded-md" />
+                            <span asp-validation-for="PhoneNumber" class="text-red-500 text-sm"></span>
+                        </div>
+
+                        <div class="flex items-center gap-4 pt-4">
+                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full font-medium transition-colors">
+                                Save Changes
+                            </button>
+                            <!-- Edit Preferences Button -->
+                            <a href="@Url.Action("EditPreferences", "Profiles")" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full font-medium transition-colors">
+                                Edit Preferences
+                            </a>
+                            <!-- cancel button -->
+                            <a href="@Url.Action("Details", "Profiles", new { id = Model.Id })" class="text-gray-400 hover:text-white transition-colors">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Preview image before upload
+        document.getElementById('photo')?.addEventListener('change', function (e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('profile-image');
+                    if (img) {
+                        img.src = e.target.result;
+                    } else {
+                        // If no img element exists, create one
+                        const placeholder = document.getElementById('profile-image-placeholder');
+                        if (placeholder) {
+                            placeholder.innerHTML = `<img id="profile-image" src="${e.target.result}" class="w-full h-full object-cover" />`;
+                        }
+                    }
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    </script>
+}

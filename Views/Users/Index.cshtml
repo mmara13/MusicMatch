@@ -1,0 +1,57 @@
+﻿@model List<MusicMatch.Models.ApplicationUser>
+
+<h2>Users</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (ViewBag.Message != null)
+{
+        <div class="alert alert-success">
+        @ViewBag.Message
+        </div>
+}
+
+
+<table class="table text-light">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Favorite Genres</th>
+            <th>Favorite Artists</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@string.Join(", ", user.FavoriteGenres.Select(g => g.Genre?.Name ?? ""))</td>
+                <td>@string.Join(", ", user.FavoriteArtists.Select(a => a.Artist?.Name ?? ""))</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-info">View</a>
+                     
+                     @* <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger">Delete</a> *@
+                     <form asp-action="Delete" asp-route-id="@user.Id" method="post" style="display: inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

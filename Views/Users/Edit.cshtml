@@ -1,0 +1,52 @@
+﻿@model MusicMatch.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<h2>Edit User</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="FirstName">First Name</label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LastName">Last Name</label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Favorite Genres</label>
+        <textarea name="FavoriteGenres" class="form-control">@(Model.FavoriteGenres?.Select(g => g.Genre?.Name ?? "").ToList() != null ? string.Join(", ", Model.FavoriteGenres.Select(g => g.Genre?.Name ?? "").ToList()) : "")</textarea>
+        <small class="form-text text-muted">Separate genres with commas.</small>
+    </div>
+    <div class="form-group">
+        <label>Favorite Artists</label>
+        <textarea name="FavoriteArtists" class="form-control">@(Model.FavoriteArtists?.Select(a => a.Artist?.Name ?? "").ToList() != null ? string.Join(", ", Model.FavoriteArtists.Select(a => a.Artist?.Name ?? "").ToList()) : "")</textarea>
+        <small class="form-text text-muted">Separate artists with commas.</small>
+    </div>
+    <div class="form-group">
+        <label>Recent Activities</label>
+        <textarea class="form-control" rows="5" readonly>@(Model.RecentActivities?.Select(r => r.ActivityType) != null ? string.Join("\n", Model.RecentActivities.Select(r => r.ActivityType)) : "")</textarea>
+        <small class="form-text text-muted">Recent activities are read-only.</small>
+    </div>
+
+     @* <div class="form-group">
+         <label asp-for="IsPrivate">Account Privacy</label>
+         <select asp-for="IsPrivate" class="form-control">
+             <option value="True">Private</option>
+             <option value="False">Public</option>
+         </select>
+     </div> *@
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a asp-controller="Users" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

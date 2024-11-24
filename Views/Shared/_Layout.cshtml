@@ -1,0 +1,147 @@
+﻿@using System.Security.Claims
+<!DOCTYPE html>
+<html lang="en" >
+<head class="bg-gradient-to-b from-gray-900 to-black min-h-screen text-white">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MusicMatch</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MusicMatch.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/artist.css" />
+</head>
+<body class="bg-gradient-to-b from-gray-900 to-black min-h-screen text-white">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light  border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">MusicMatch</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Index">Index</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
+                            </li>
+                            @* search *@
+                            <div class="relative mx-4 text-dark">
+                                <input type="text"
+                                       id="navbarSearch"
+                                       placeholder="Search users..."
+                                       class="w-64 px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                       autocomplete="off">
+                            </div>
+                        }
+                        @if (User.IsInRole("User"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@Model.Id">My profile</a>
+                            </li>
+                            @* search *@
+                            <div class="relative mx-4 text-dark">
+                                <input type="text"
+                                       id="navbarSearch"
+                                       placeholder="Search users..."
+                                       class="w-64 px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                       autocomplete="off">
+                            </div>
+                        }
+                        
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+        <div id="searchResults" class="container mx-auto px-4 py-8 text-dark">
+            <!-- Results will be loaded here -->
+        </div>
+    </header>
+    <div class="container">
+        <main role="main" @* class="pb-3" *@>
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - MusicMatch - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @* <script src="https://cdn.tailwindcss.com"></script> *@
+    @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('navbarSearch');
+            const searchResults = document.getElementById('searchResults');
+            let searchTimeout;
+
+            if (!searchInput || !searchResults) {
+                console.error('Search elements not found!');
+                return;
+            }
+
+            // Handle both input changes and enter key
+            searchInput.addEventListener('input', handleSearch);
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    handleSearch(e);
+                }
+            });
+
+            function handleSearch(e) {
+                clearTimeout(searchTimeout);
+                const query = e.target.value.trim();
+
+                // Debug log
+                console.log('Searching for:', query);
+
+                searchTimeout = setTimeout(() => {
+                    if (query.length === 0) {
+                        searchResults.innerHTML = '';
+                        return;
+                    }
+
+                    // Show loading state
+                    searchResults.innerHTML = '<div class="text-center py-8">Searching...</div>';
+
+                    fetch(`/Profiles/SearchPartial?query=${encodeURIComponent(query)}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.text();
+                        })
+                        .then(html => {
+                            searchResults.innerHTML = html;
+                            console.log('Search results updated');
+                        })
+                        .catch(error => {
+                            console.error('Search error:', error);
+                            searchResults.innerHTML = `
+                                                <div class="text-center py-8 text-red-500">
+                                                    An error occurred while searching. Please try again.
+                                                </div>
+                                            `;
+                        });
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>
