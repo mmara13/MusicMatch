@@ -1,0 +1,36 @@
+﻿@model MusicMatch.Models.Song
+
+<h2>@Model.Title</h2>
+
+<div>
+    <strong>Artist:</strong> @Model.Artist?.Name
+</div>
+<div>
+    <strong>Genre:</strong> @Model.Genre
+</div>
+<div>
+    <strong>Mood:</strong> @Model.Mood
+</div>
+<div>
+    <strong>Duration:</strong> @Model.Duration
+</div>
+<div>
+    <strong>Release Date:</strong>
+    @(Model.ReleaseDate.HasValue
+        ? Model.ReleaseDate.Value.ToString("d")
+        : "Unknown")
+
+</div>
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
+
+
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+}
+<form asp-action="AddToFavorites" asp-route-songId="@Model.Id" method="post" class="d-inline">
+    <button type="submit" class="btn btn-success">Add to Favorites</button>
+</form>

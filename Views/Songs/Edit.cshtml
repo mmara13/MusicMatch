@@ -1,0 +1,49 @@
+﻿@model MusicMatch.Models.Song
+
+<h2>Edit Song</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Title" class="control-label">Title</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ArtistId" class="control-label">Artist</label>
+        <select asp-for="ArtistId" asp-items="@(new SelectList(ViewBag.Artists, "Id", "Name", Model.ArtistId))" class="form-control">
+            <option value="">-- Select an Artist --</option>
+        </select>
+        <span asp-validation-for="ArtistId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Genre" class="control-label">Genre</label>
+        <input asp-for="Genre" class="form-control" />
+        <span asp-validation-for="Genre" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Mood" class="control-label">Mood</label>
+        <select asp-for="Mood" asp-items="@(new SelectList(ViewBag.Moods, Model.Mood))" class="form-control"></select>
+        <span asp-validation-for="Mood" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Duration" class="control-label">Duration</label>
+        <input asp-for="Duration" class="form-control" type="text" placeholder="hh:mm:ss" />
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ReleaseDate" class="control-label">Release Date</label>
+        <input asp-for="ReleaseDate" type="date" class="form-control" />
+        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+    </div>
+    
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

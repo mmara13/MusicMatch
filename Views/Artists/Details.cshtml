@@ -1,0 +1,32 @@
+﻿@model MusicMatch.Models.Artist
+
+<h2>@Model.Name</h2>
+
+<div>
+    <strong>Biography:</strong> @(string.IsNullOrWhiteSpace(Model.Bio) ? "No biography provided." : Model.Bio)
+</div>
+<div>
+    <strong>Number of Songs:</strong> @Model.Songs?.Count
+</div>
+
+<div>
+    <strong>Songs:</strong>
+    <ul>
+        @foreach (var song in Model.Songs ?? new List<MusicMatch.Models.Song>())
+        {
+            <li>@song.Title</li>
+        }
+    </ul>
+</div>
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
+
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+}
+<form asp-action="AddToFavorites" asp-route-artistId="@Model.Id" method="post" class="d-inline">
+    <button type="submit" class="btn btn-success">Add to Favorites</button>
+</form>
