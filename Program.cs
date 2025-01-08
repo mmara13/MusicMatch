@@ -91,6 +91,13 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+
+/*-------------------------------*/
+app.MapControllerRoute(
+    name: "api",
+    pattern: "api/{controller=Events}/{action=GetEvents}/{id?}");
+/*-------------------------------*/
+
 //create directory for profile photos if it doesn't exist
 var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "profiles");
 if (!Directory.Exists(uploadsPath))

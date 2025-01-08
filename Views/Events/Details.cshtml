@@ -1,0 +1,68 @@
+﻿@model MusicMatch.Models.Event
+
+@{
+    ViewData["Title"] = $"{Model.Name} Details";
+}
+<!-- events.css -->
+<link rel="stylesheet" href="~/css/eventDetails.css" />
+
+<div class="container mt-5 position-relative">
+
+    <!-- header pentru event-->
+    <div class="event-header">
+        <p class="event-date">Date - @Model.DateTime.ToString("dd MMMM yyyy")</p>
+        <h1 class="event-title">@Model.Name</h1>
+        <p class="event-location">@Model.Location</p>
+        <p class="event-description"><strong>About:</strong> @Model.Description</p>
+
+        <!--RSVP butoane : Interested, Going, Not Going-->
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <form method="post" action="/Events/RSVP">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="eventId" value="@Model.Id" />
+                <input type="hidden" name="rsvpStatus" value="Interested" />
+                <button type="submit" class="rsvp-btn">INTERESTED</button>
+            </form>
+
+            <form method="post" action="/Events/RSVP">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="eventId" value="@Model.Id" />
+                <input type="hidden" name="rsvpStatus" value="Going" />
+                <button type="submit" class="rsvp-btn">GOING</button>
+            </form>
+
+            <form method="post" action="/Events/RSVP">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="eventId" value="@Model.Id" />
+                <input type="hidden" name="rsvpStatus" value="Not Going" />
+                <button type="submit" class="rsvp-btn">NOT GOING</button>
+            </form>
+
+            <!-- Back to the Events Page button -->
+            <a asp-action="Index" class="back-btn">Back to Events</a>
+        </div>
+
+        <!--Lista with people Going to the event-->
+
+        <div class="col-md-4">
+            <h5>People Going</h5>
+            <div class="list-group">
+                @if (Model.Attendees != null && Model.Attendees.Any(a => a.RSVP_Status == "Going"))
+                {
+                    foreach (var attendee in Model.Attendees.Where(a => a.RSVP_Status == "Going"))
+                    {
+                        <div class="list-group-item">@attendee.ApplicationUser.FirstName @attendee.ApplicationUser.LastName</div>
+                    }
+                }
+                else
+                {
+                    <div class="list-group-item">No attendees yet.</div>
+                }
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<!-- @Html.AntiForgeryToken() -(token anti-CSRF (Cross-Site Request Forgery))  scop sa previna atacurile CSRF, care sunt comune in web apps.-->
