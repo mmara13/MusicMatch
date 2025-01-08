@@ -1,0 +1,11 @@
+﻿@model MusicMatch.Models.Song
+
+<h2>Delete Song</h2>
+
+<p>Are you sure you want to delete the song <strong>@Model.Title</strong> by @Model.Artist?.Name?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

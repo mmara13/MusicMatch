@@ -28,10 +28,19 @@
                                 <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Index">Index</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Index">Manage Users</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Artists" asp-action="Index">Manage Artists</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Songs" asp-action="Index">Manage Songs</a>
                             </li>
                             @* search *@
                             <div class="relative mx-4 text-dark">
@@ -48,7 +57,10 @@
                                 <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@Model.Id">My profile</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
                             </li>
                             @* search *@
                             <div class="relative mx-4 text-dark">
@@ -69,6 +81,25 @@
             <!-- Results will be loaded here -->
         </div>
     </header>
+
+    <div class="container mt-3">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+
     <div class="container">
         <main role="main" @* class="pb-3" *@>
             @RenderBody()

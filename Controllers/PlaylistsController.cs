@@ -30,32 +30,50 @@ namespace MusicMatch.Controllers
         // GET: Playlists
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Playlists.Include(p => p.User).ToListAsync());
+            var userId = _userManager.GetUserId(User);
+            var playlists = await _context.Playlists
+                                          .Where(p => p.UserId == userId)
+                                          .Include(p => p.User)
+                                          .ToListAsync();
+            return View(playlists);
         }
 
+
         // GET: Playlists/Create
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Playlists/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,IsCollaborative,Visibility")] Playlist playlist)
+        public async Task<IActionResult> Create(Playlist playlist)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                playlist.CreatedDate = DateTime.Now;
-                var user = await _userManager.GetUserAsync(User);
-                playlist.UserId = user?.Id;
-                //playlist.UserId = User.Identity.Name; // 
-                _context.Add(playlist);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View(playlist);
             }
-            return View(playlist);
+
+            // Verifică dacă utilizatorul este autentificat
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "You must be logged in to create a playlist.");
+                return View(playlist);
+            }
+
+            // Adaugă informații suplimentare
+            playlist.UserId = user.Id;
+            playlist.CreatedDate = DateTime.Now;
+
+            _context.Add(playlist);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Playlist created successfully!";
+            return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Playlists/Edit/5
         public async Task<IActionResult> Edit(int? id)
