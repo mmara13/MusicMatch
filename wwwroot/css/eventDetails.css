@@ -1,0 +1,84 @@
+﻿
+/*Style Pagina cu detaliile Concertului + Rsvp */
+
+/*Centrare*/
+.container {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.event-header .event-date {
+    font-size: 16px;
+    color: #aaaaaa;
+}
+
+.event-header .event-title {
+    font-size: 50px;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 10px 0;
+}
+
+.event-header .event-location {
+    font-size: 20px;
+    color: #aaaaaa;
+}
+
+.event-description {
+    font-size: 20px;
+    color: #cccccc;
+    margin-top: 10px;
+}
+
+/*RSVP Button Styling */
+form .rsvp-btn {
+    background-color: #10B981; /*color button*/
+    color: #ffffff; 
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 20px;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 25px;
+    transition: background-color 0.3s, color 0.3s; 
+    border: none;
+}
+    form .rsvp-btn:hover {
+        background-color: #059669;
+        color: #ffffff;
+    }
+
+.back-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    background-color: #8B5CF6;
+    color: #ffffff; 
+    border: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+    .back-btn:hover {
+        background-color: #7C3AED;
+        color: #ffffff;
+    }
+
+.list-group {
+    max-height: 100px; 
+    overflow-y: auto; 
+    
+    padding: 5px;
+    border-radius: 5px; 
+}
+
+.list-group-item {
+    background-color: #f8f9fa; 
+    padding: 10px; 
+    font-size: 16px; 
+    color: #333; 
+}
+
+    .list-group-item:hover {
+        background-color: #e9ecef; 
+    }

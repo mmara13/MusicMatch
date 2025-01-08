@@ -33,6 +33,12 @@
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
                             </li>
+							//---------------------------------//
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            //---------------------------------//
+
                             @* search *@
                             <div class="relative mx-4 text-dark">
                                 <input type="text"
@@ -48,8 +54,13 @@
                                 <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@Model.Id">My profile</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" >My profile</a>
                             </li>
+                            //---------------------------------//
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            //---------------------------------//
                             @* search *@
                             <div class="relative mx-4 text-dark">
                                 <input type="text"
