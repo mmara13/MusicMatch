@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
 using MusicMatch.Models;
+using System.Diagnostics;
 
 namespace MusicMatch.Controllers
 {
@@ -38,40 +39,35 @@ namespace MusicMatch.Controllers
             return View(playlists);
         }
 
-
         // GET: Playlists/Create
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            Playlist playlist = new Playlist();
+
+            return View(playlist);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Playlist playlist)
+        public IActionResult Create(Playlist playlist)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(playlist);
-            }
-
-            // Verifică dacă utilizatorul este autentificat
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "You must be logged in to create a playlist.");
-                return View(playlist);
-            }
-
-            // Adaugă informații suplimentare
-            playlist.UserId = user.Id;
+            playlist.UserId = _userManager.GetUserId(User);
             playlist.CreatedDate = DateTime.Now;
+            playlist.Visibility ??= "Private";
 
-            _context.Add(playlist);
-            await _context.SaveChangesAsync();
+            if (ModelState.IsValid)
+            {
+                _context.Playlists.Add(playlist);
+                _context.SaveChanges();
 
-            TempData["SuccessMessage"] = "Playlist created successfully!";
-            return RedirectToAction(nameof(Index));
+                TempData["SuccessMessage"] = "Playlist created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return View(playlist);
+            }
         }
 
 

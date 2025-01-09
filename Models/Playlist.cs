@@ -11,16 +11,11 @@ namespace MusicMatch.Models
         public string Name { get; set; }
 
         public string? Description { get; set; }
-
         public string? Mood {  get; set; }
         public string? Genre { get; set; }
-
-        [Required]
         public DateTime? CreatedDate { get; set; }
-
-        [Required]
-        public string UserId { get; set; }
-        public virtual ApplicationUser User { get; set; }
+        public string? UserId { get; set; }
+        public virtual ApplicationUser? User { get; set; }
 
         [Required]
         public bool IsCollaborative { get; set; }
