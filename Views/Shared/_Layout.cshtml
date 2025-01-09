@@ -1,4 +1,4 @@
-﻿@using System.Security.Claims
+@using System.Security.Claims
 <!DOCTYPE html>
 <html lang="en" >
 <head class="bg-gradient-to-b from-gray-900 to-black min-h-screen text-white">
@@ -33,6 +33,11 @@
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
                             </li>
@@ -41,6 +46,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Songs" asp-action="Index">Manage Songs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Genres" asp-action="Index">Manage Genres</a>
                             </li>
                             @* search *@
                             <div class="relative mx-4 text-dark">
@@ -57,11 +65,21 @@
                                 <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
+
+                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" >My profile</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
+
                             </li>
+                          
                             @* search *@
                             <div class="relative mx-4 text-dark">
                                 <input type="text"

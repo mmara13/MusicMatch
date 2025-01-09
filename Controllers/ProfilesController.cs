@@ -462,7 +462,7 @@ namespace MusicMatch.Controllers
                 .Include(s => s.Artist)
                 .Where(s => s.Title.ToLower().Contains(query) ||
                             (s.Artist != null && s.Artist.Name.ToLower().Contains(query)) ||
-                            (!string.IsNullOrEmpty(s.Genre) && s.Genre.ToLower().Contains(query)))
+                            (!string.IsNullOrEmpty(s.Genre.Name) && s.Genre.Name.ToLower().Contains(query)))
                 .Take(20)
                 .ToListAsync();
 

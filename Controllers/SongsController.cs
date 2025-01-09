@@ -33,6 +33,7 @@ namespace MusicMatch.Controllers
         {
             var songsQuery = _context.Songs
                     .Include(s => s.Artist)
+                    .Include(s => s.Genre)
                     .AsQueryable(); // Ensures compatibility with the Where clause
 
             if (!string.IsNullOrWhiteSpace(searchString))
@@ -40,7 +41,7 @@ namespace MusicMatch.Controllers
                 songsQuery = songsQuery.Where(s =>
                     s.Title.Contains(searchString) ||
                     s.Artist.Name.Contains(searchString) ||
-                    (s.Genre != null && s.Genre.Contains(searchString))
+                    (s.Genre != null && s.Genre.Name.Contains(searchString))
                 );
             }
 
@@ -54,6 +55,7 @@ namespace MusicMatch.Controllers
 
             var song = await _context.Songs
                 .Include(s => s.Artist)
+                .Include(s => s.Genre)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (song == null) return NotFound();
@@ -72,7 +74,9 @@ namespace MusicMatch.Controllers
         public IActionResult Create()
         {
             PopulateViewData();
-            return View();
+            Song song = new Song();
+            
+            return View(song);
         }
 
         [HttpPost]
@@ -206,6 +210,7 @@ namespace MusicMatch.Controllers
 
             var song = await _context.Songs
                 .Include(s => s.Artist)
+                .Include(s => s.Genre)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (song == null) return NotFound();
@@ -230,7 +235,9 @@ namespace MusicMatch.Controllers
         private void PopulateViewData()
         {
             ViewBag.Artists = _context.Artists.ToList();
+            ViewBag.Genres = _context.Genres.ToList();
             ViewBag.Moods = new List<string> { "Happy", "Sad", "Energetic", "Calm", "Angry" };
         }
+
     }
 }

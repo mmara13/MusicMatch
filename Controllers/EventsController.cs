@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Net;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
@@ -28,10 +29,16 @@ namespace MusicMatch.Controllers
         }
 
         // GET: Events
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? location = null, string? type = null, string? artist = null)
         {
+            if (location != null || artist != null)
+            {
+                return View(FilterEvents(location, type, artist));
+            }
+
             return View(await _context.Events.Include(e => e.Artist).ToListAsync());
         }
+
 
         // GET: Events/Create
         public IActionResult Create()
@@ -133,7 +140,115 @@ namespace MusicMatch.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        
+        //-----------------------------------------------
+        
+        [NonAction]
+        private List<Event> FilterEvents(string? location, string? type = null, string? artist = null)
+        {
+            var events = _context.Events.AsQueryable();
 
+            if (!string.IsNullOrEmpty(location))
+            {
+                events = events.Where(e => e.Location.ToLower().Contains(location.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(type))
+            {
+                events = events.Where(e => e.Type.ToLower() == type.ToLower());
+            }
+
+            if (!string.IsNullOrEmpty(artist))
+            {
+                events = events.Where(e => e.Artist != null && e.Artist.Name.ToLower().Contains(artist.ToLower()));
+            }
+
+            return events
+                .Include(e => e.Artist)
+                .Include(e => e.Attendees)
+                .ToList();
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetEvents([FromQuery] string location, [FromQuery] string? type = null)
+        {
+            if (string.IsNullOrEmpty(location))
+            {
+                return BadRequest("Location is required.");
+            }
+
+            var events = FilterEvents(location, type);
+
+            if (!events.Any())
+            {
+                return NotFound("No events found for the specified location and type.");
+            }
+
+            return Ok(events);
+        }
+       
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var @event = await _context.Events
+                .Include(e => e.Artist)
+                .Include(e => e.Attendees)
+                .ThenInclude(a => a.ApplicationUser)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (@event == null)
+            {
+                return NotFound(); 
+            }
+
+            return View(@event);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RSVP(int eventId, string rsvpStatus)
+        {
+            if (string.IsNullOrEmpty(rsvpStatus))
+            {
+                return BadRequest("RSVP status is required.");
+            }
+
+            var userId = _userManager.GetUserId(User); //Obt Id-ul utilizatorului curent
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            // Verificare daca utilizatorul are deja un RSPV pt evenimentul respectiv
+            var existingRSVP = await _context.EventAttendees
+                .FirstOrDefaultAsync(ea => ea.EventId == eventId && ea.UserId == userId);
+
+            if (existingRSVP != null)
+            {
+                
+                existingRSVP.RSVP_Status = rsvpStatus;
+                _context.Update(existingRSVP);
+            }
+            else
+            {
+                // Creare RSVP nou
+                var newRSVP = new EventAttendee
+                {
+                    EventId = eventId,
+                    UserId = userId,
+                    RSVP_Status = rsvpStatus
+                };
+                _context.Add(newRSVP);
+            }
+
+            await _context.SaveChangesAsync(); //Salvare modificari
+
+            return RedirectToAction("Details", new { id = eventId }); // redirectionare pagina Details a evenimentului
+        }
+
+
+        //---------------
         private bool EventExists(int id)
         {
             return _context.Events.Any(e => e.Id == id);
