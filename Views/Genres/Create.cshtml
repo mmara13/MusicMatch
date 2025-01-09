@@ -1,0 +1,16 @@
+﻿@model MusicMatch.Models.Genre
+
+<h2>Add New Genre</h2>
+
+<form asp-action="Create">
+    <div>
+        <label for="Name">Name</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+    <div>
+        <label for="Description">Description</label>
+        <input asp-for="Description" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
