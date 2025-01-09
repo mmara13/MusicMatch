@@ -22,7 +22,7 @@
             <tr>
                 <td>@song.Title</td>
                 <td>@song.Artist?.Name</td>
-                <td>@song.Genre</td>
+                <td>@song.Genre?.Name</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@song.Id" class="btn btn-info">Details</a>
 
