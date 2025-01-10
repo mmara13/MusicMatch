@@ -28,18 +28,13 @@
                                 <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Index">Manage Users</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
                             </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
-                            </li>
-                            
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Index">Manage Users</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Artists" asp-action="Index">Manage Artists</a>
@@ -50,11 +45,15 @@
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Genres" asp-action="Index">Manage Genres</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            
                             @* search *@
                             <div class="relative mx-4 text-dark">
                                 <input type="text"
                                        id="navbarSearch"
-                                       placeholder="Search users..."
+                                       placeholder="Search artists, songs, users..."
                                        class="w-64 px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
                                        autocomplete="off">
                             </div>
@@ -65,26 +64,20 @@
                                 <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-
-                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" >My profile</a>
-                            </li>
-                            
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
-
                             </li>
-                          
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            
                             @* search *@
                             <div class="relative mx-4 text-dark">
                                 <input type="text"
                                        id="navbarSearch"
-                                       placeholder="Search users..."
+                                       placeholder="Search artists, songs, users..."
                                        class="w-64 px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
                                        autocomplete="off">
                             </div>

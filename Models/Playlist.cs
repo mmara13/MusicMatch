@@ -21,7 +21,7 @@ namespace MusicMatch.Models
         public bool IsCollaborative { get; set; }
 
         [Required]
-        public string Visibility { get; set; } //Public Private Friends
+        public string Visibility { get; set; }
 
         public virtual ICollection<PlaylistCollaborator>? Collaborators { get; set; }
         public virtual ICollection<PlaylistSong>? Songs { get; set; }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
 using MusicMatch.Models;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace MusicMatch.Controllers
@@ -65,7 +66,6 @@ namespace MusicMatch.Controllers
 
         private bool IsValidDuration(string duration)
         {
-            // Regex pentru validarea hh:mm:ss
             var regex = new Regex(@"^([0-9]{2}):([0-9]{2}):([0-9]{2})$");
             return regex.IsMatch(duration);
         }
@@ -99,7 +99,7 @@ namespace MusicMatch.Controllers
                 }
 
                 var timeParts = song.Duration.ToString().Split(':');
-                if (timeParts.Length == 3) // Asigură-te că ai ore, minute și secunde
+                if (timeParts.Length == 3)
                 {
                     song.Duration = new TimeSpan(int.Parse(timeParts[0]), int.Parse(timeParts[1]), int.Parse(timeParts[2]));
                 }
@@ -141,7 +141,7 @@ namespace MusicMatch.Controllers
             if (!string.IsNullOrEmpty(song.Duration.ToString()))
             {
                 var timeParts = song.Duration.ToString().Split(':');
-                if (timeParts.Length == 3) // Asigură-te că ai ore, minute și secunde
+                if (timeParts.Length == 3)
                 {
                     song.Duration = new TimeSpan(int.Parse(timeParts[0]), int.Parse(timeParts[1]), int.Parse(timeParts[2]));
                 }
@@ -156,21 +156,18 @@ namespace MusicMatch.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToFavorites(int songId)
         {
-            // Găsește utilizatorul curent
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized(); // Utilizatorul nu este autentificat
+                return Unauthorized();
             }
 
-            // Găsește UserPreferencesForm pentru utilizatorul curent
             var userPreferences = await _context.UserPreferencesForms
                 .Include(upf => upf.UserPreferencesSongs)
                 .FirstOrDefaultAsync(upf => upf.UserId == userId);
 
             if (userPreferences == null)
             {
-                // Creează UserPreferencesForm dacă nu există
                 userPreferences = new UserPreferencesForm
                 {
                     UserId = userId,
@@ -179,15 +176,12 @@ namespace MusicMatch.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // Verifică dacă acest cântec este deja favorit
             if (userPreferences.UserPreferencesSongs.Any(ups => ups.SongId == songId))
             {
                 TempData["ErrorMessage"] = "This song is already in your favorites.";
                 return RedirectToAction("Details", "Songs", new { id = songId });
-                // Redirecționează la pagina Index
             }
 
-            // Adaugă cântecul la preferințe
             var userPreferenceSong = new UserPreferencesSong
             {
                 SongId = songId,
@@ -198,7 +192,6 @@ namespace MusicMatch.Controllers
 
             TempData["SuccessMessage"] = "Song added to favorites successfully.";
             return RedirectToAction("Details", "Songs", new { id = songId });
-            // Redirecționează la pagina Index
         }
 
 
@@ -232,12 +225,38 @@ namespace MusicMatch.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize]
+        public async Task<IActionResult> SelectPlaylistForSong(int songId)
+        {
+            
+
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "You must be logged in to add a song to a playlist.";
+                return RedirectToAction("Details", new { id = songId });
+            }
+
+            var playlists = await _context.Playlists
+                .Where(p => p.UserId == user.Id)
+                .ToListAsync();
+
+            if (!playlists.Any())
+            {
+                TempData["ErrorMessage"] = "You don't have any playlists yet. Please create one first.";
+                return RedirectToAction("Details", new { id = songId });
+            }
+
+            ViewData["SongId"] = songId;
+            return View(playlists);
+        }
+
         private void PopulateViewData()
         {
             ViewBag.Artists = _context.Artists.ToList();
             ViewBag.Genres = _context.Genres.ToList();
             ViewBag.Moods = new List<string> { "Happy", "Sad", "Energetic", "Calm", "Angry" };
         }
-
     }
 }
