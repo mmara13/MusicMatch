@@ -8,9 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NewFolder\**" />
     <Compile Remove="Views\NewFolder1\**" />
+    <Content Remove="NewFolder\**" />
     <Content Remove="Views\NewFolder1\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
     <EmbeddedResource Remove="Views\NewFolder1\**" />
+    <None Remove="NewFolder\**" />
     <None Remove="Views\NewFolder1\**" />
   </ItemGroup>
 
@@ -49,10 +53,6 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>

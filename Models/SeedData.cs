@@ -160,17 +160,18 @@ namespace MusicMatch.Models
                     context.SaveChanges();
                 }
 
-                // Load all genres and artists into memory to avoid multiple queries
+                // Load all genres and artists into memory
                 var genres = context.Genres.ToList();
                 var artists = context.Artists.ToList();
-                var chatRooms = context.ChatRooms.ToList();
+                var existingChatRooms = context.ChatRooms.ToList();
 
                 // Seed Chat Rooms for Genres
+                var genreChatRoomsToAdd = new List<ChatRoom>();
                 foreach (var genre in genres)
                 {
-                    if (!chatRooms.Any(c => c.Type == "Genre" && c.RelatedId == genre.Id))
+                    if (!existingChatRooms.Any(c => c.Type == "Genre" && c.RelatedId == genre.Id))
                     {
-                        chatRooms.Add(new ChatRoom
+                        genreChatRoomsToAdd.Add(new ChatRoom
                         {
                             Name = $"Genre: {genre.Name}",
                             Type = "Genre",
@@ -179,15 +180,16 @@ namespace MusicMatch.Models
                         });
                     }
                 }
-                context.ChatRooms.AddRange(chatRooms);
-                
+                context.ChatRooms.AddRange(genreChatRoomsToAdd);
+                context.SaveChanges();
 
                 // Seed Chat Rooms for Artists
+                var artistChatRoomsToAdd = new List<ChatRoom>();
                 foreach (var artist in artists)
                 {
-                    if (!chatRooms.Any(c => c.Type == "Artist" && c.RelatedId == artist.Id))
+                    if (!existingChatRooms.Any(c => c.Type == "Artist" && c.RelatedId == artist.Id))
                     {
-                        chatRooms.Add(new ChatRoom
+                        artistChatRoomsToAdd.Add(new ChatRoom
                         {
                             Name = $"Artist: {artist.Name}",
                             Type = "Artist",
@@ -196,8 +198,9 @@ namespace MusicMatch.Models
                         });
                     }
                 }
-                context.ChatRooms.AddRange(chatRooms);
-               
+                context.ChatRooms.AddRange(artistChatRoomsToAdd);
+                context.SaveChanges();
+
 
             }
         }

@@ -21,7 +21,7 @@ namespace MusicMatch.Hubs
         public async Task SendMessageToChatRoom(int chatroomId, string userId, string content)
         {
             // You can send the message to all users in the specified chat room
-            await Clients.Group(chatroomId.ToString()).SendAsync("ReceiveMessage", userId, content);
+            await Clients.Group(chatroomId.ToString()).SendAsync("ReceiveMessage", userId, content, DateTime.UtcNow.ToString("o"));
         }
 
       
