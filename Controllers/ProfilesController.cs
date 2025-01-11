@@ -287,6 +287,9 @@ namespace MusicMatch.Controllers
             ViewBag.LikedSongs = likedSongs;
             ViewBag.LikedArtists = likedArtists;
 
+            ViewBag.AllSongs = await db.Songs.ToListAsync();
+            ViewBag.AllArtists = await db.Artists.ToListAsync();
+
             return View(model);
         }
 
@@ -315,89 +318,123 @@ namespace MusicMatch.Controllers
                 await db.SaveChangesAsync(); // Save to generate Id
             }
 
-            // Clear existing preferences
-            db.UserPreferencesSongs.RemoveRange(userPreferences.UserPreferencesSongs);
-            db.UserPreferencesArtists.RemoveRange(userPreferences.UserPreferencesArtists);
+            // Preserve current preferences
+            var currentSongs = userPreferences.UserPreferencesSongs.Select(ups => ups.SongId).ToList();
+            var currentArtists = userPreferences.UserPreferencesArtists.Select(upa => upa.ArtistId).ToList();
 
-            // Add new preferences
+            // Add new songs
             if (model.UserPreferencesSongs != null)
             {
-                // Take only first 10 songs
+                // Add new songs that aren't already in the current list (limit to first 10 songs)
                 foreach (var songRelation in model.UserPreferencesSongs.Take(10))
                 {
-                    db.UserPreferencesSongs.Add(new UserPreferencesSong
+                    if (!currentSongs.Contains(songRelation.SongId))
                     {
-                        UserPreferencesFormId = userPreferences.Id,
-                        SongId = songRelation.SongId
-                    });
+                        db.UserPreferencesSongs.Add(new UserPreferencesSong
+                        {
+                            UserPreferencesFormId = userPreferences.Id,
+                            SongId = songRelation.SongId
+                        });
+                    }
                 }
             }
 
+            // Add new artists
             if (model.UserPreferencesArtists != null)
             {
-                // Take only first 5 artists
+                // Add new artists that aren't already in the current list (limit to first 5 artists)
                 foreach (var artistRelation in model.UserPreferencesArtists.Take(5))
                 {
-                    db.UserPreferencesArtists.Add(new UserPreferencesArtist
+                    if (!currentArtists.Contains(artistRelation.ArtistId))
                     {
-                        UserPreferencesFormId = userPreferences.Id,
-                        ArtistId = artistRelation.ArtistId
-                    });
+                        db.UserPreferencesArtists.Add(new UserPreferencesArtist
+                        {
+                            UserPreferencesFormId = userPreferences.Id,
+                            ArtistId = artistRelation.ArtistId
+                        });
+                    }
                 }
             }
 
+            // Remove unselected songs
+            var songsToRemove = userPreferences.UserPreferencesSongs
+                .Where(ups => !model.UserPreferencesSongs.Any(s => s.SongId == ups.SongId))
+                .ToList();
+
+            foreach (var song in songsToRemove)
+            {
+                db.UserPreferencesSongs.Remove(song);
+            }
+
+            // Remove unselected artists
+            var artistsToRemove = userPreferences.UserPreferencesArtists
+                .Where(upa => !model.UserPreferencesArtists.Any(a => a.ArtistId == upa.ArtistId))
+                .ToList();
+
+            foreach (var artist in artistsToRemove)
+            {
+                db.UserPreferencesArtists.Remove(artist);
+            }
+
+            // Save changes
             await db.SaveChangesAsync();
+
             TempData["Message"] = "Preferences updated successfully.";
             return RedirectToAction("EditPreferences");
         }
 
 
+
         //search
 
         // Add these methods to your ProfilesController class
+        // de decomentat daca crapa
+        //[HttpGet]
+        //public async Task<IActionResult> Search(string query)
+        //{
+        //    if (string.IsNullOrWhiteSpace(query))
+        //    {
+        //        return View(new List<ApplicationUser>());
+        //    }
 
-        [HttpGet]
-        public async Task<IActionResult> Search(string query)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-            {
-                return View(new List<ApplicationUser>());
-            }
+        //    var users = await _userManager.Users
+        //        .Where(u => u.FirstName.Contains(query) ||
+        //                    u.LastName.Contains(query) ||
+        //                    u.Email.Contains(query))
+        //        .Take(20) // Limit results
+        //        .ToListAsync();
 
-            var users = await _userManager.Users
-                .Where(u => u.FirstName.Contains(query) ||
-                            u.LastName.Contains(query) ||
-                            u.Email.Contains(query))
-                .Take(20) // Limit results
-                .ToListAsync();
+        //    // Add preferences data for each user
+        //    foreach (var user in users)
+        //    {
+        //        var preferences = await db.UserPreferencesForms
+        //            .Include(upf => upf.UserPreferencesSongs)
+        //                .ThenInclude(ups => ups.Song)
+        //            .Include(upf => upf.UserPreferencesArtists)
+        //                .ThenInclude(upa => upa.Artist)
+        //            .FirstOrDefaultAsync(upf => upf.UserId == user.Id);
 
-            // Add preferences data for each user
-            foreach (var user in users)
-            {
-                var preferences = await db.UserPreferencesForms
-                    .Include(upf => upf.UserPreferencesSongs)
-                        .ThenInclude(ups => ups.Song)
-                    .Include(upf => upf.UserPreferencesArtists)
-                        .ThenInclude(upa => upa.Artist)
-                    .FirstOrDefaultAsync(upf => upf.UserId == user.Id);
+        //        ViewData[$"Preferences_{user.Id}"] = preferences;
+        //    }
 
-                ViewData[$"Preferences_{user.Id}"] = preferences;
-            }
-
-            return View(users);
-        }
+        //    return View(users);
+        //}
 
         [HttpGet]
         public async Task<IActionResult> SearchPartial(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
-                return PartialView("_SearchResults", new List<ApplicationUser>());
+                ViewBag.Users = new List<ApplicationUser>();
+                ViewBag.Songs = new List<Song>();
+                ViewBag.Artists = new List<Artist>();
+                return PartialView("_SearchResults");
             }
 
             // Convert query to lowercase for case-insensitive search
             query = query.ToLower();
 
+            // Căutare utilizatori
             var users = await _userManager.Users
                 .Where(u => u.FirstName.ToLower().Contains(query) ||
                             u.LastName.ToLower().Contains(query) ||
@@ -405,6 +442,9 @@ namespace MusicMatch.Controllers
                 .Take(20)
                 .ToListAsync();
 
+       
+
+            // Obține preferințele pentru fiecare utilizator
             foreach (var user in users)
             {
                 var preferences = await db.UserPreferencesForms
@@ -417,8 +457,31 @@ namespace MusicMatch.Controllers
                 ViewData[$"Preferences_{user.Id}"] = preferences;
             }
 
-            return PartialView("_SearchResults", users);
+            // Căutare cântece
+            var songs = await db.Songs
+                .Include(s => s.Artist)
+                .Where(s => s.Title.ToLower().Contains(query) ||
+                            (s.Artist != null && s.Artist.Name.ToLower().Contains(query)) ||
+                            (!string.IsNullOrEmpty(s.Genre.Name) && s.Genre.Name.ToLower().Contains(query)))
+                .Take(20)
+                .ToListAsync();
+
+            var artists = await db.Artists
+                .Where(a => a.Name.ToLower().Contains(query) ||
+                    (!string.IsNullOrEmpty(a.Bio) && a.Bio.ToLower().Contains(query)))
+                .Take(20)
+                .ToListAsync();
+
+            // Stocăm rezultatele în ViewBag
+            ViewBag.Users = users;
+            ViewBag.Songs = songs;
+            ViewBag.Artists = artists;
+
+            return PartialView("_SearchResults");
         }
+
+
+
     }
 
 

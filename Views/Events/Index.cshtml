@@ -1,0 +1,109 @@
+﻿@model IEnumerable<MusicMatch.Models.Event>
+
+@{
+    ViewData["Title"] = "Events List";
+
+    string selectedType = ViewData["Type"]?.ToString();
+    string location = ViewData["Location"]?.ToString();
+    string artist = ViewData["Artist"]?.ToString();
+
+    // Dropdown options
+    var options = new List<(string Value, string Text)>
+    {
+        ("", "All Types"),
+        ("Concert", "Concert"),
+        ("Festival", "Festival")
+    };
+}
+<!--events.css-->
+<link rel="stylesheet" href="~/css/events.css" />
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4"> Discover local concerts and events based on your favorite preferences</h2>
+
+    <!-- Filter Form : Location, Event Type, Artist -->
+    <form method="get" asp-action="Index" class="row g-3 mb-4">
+        <div class="col-md-2">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" id="location" name="location" class="form-control"
+                   placeholder="Enter a city or location"
+                   value="@location" />
+        </div>
+        <div class="col-md-2">
+            <label for="type" class="form-label">Event Type</label>
+            <select id="type" name="type" class="form-select">
+                @foreach (var option in options)
+                {
+                    if (option.Value == selectedType)
+                    {
+                        <option value="@option.Value" selected>@option.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@option.Value">@option.Text</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="artist" class="form-label">Artist</label>
+            <input type="text" id="artist" name="artist" class="form-control"
+                   placeholder="Enter artist name"
+                   value="@artist" />
+        </div>
+        <div class="col-md-2 align-self-end">
+            <button type="submit" class="btn w-100"
+                    style="background-color: #7b3beb; color: white;">
+                Filter Events
+            </button>
+        </div>
+    </form>
+
+    <!-- Afisare Events-->
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Type</th>
+                    <th>Artist</th>
+                    <th>Date</th>
+                    <th> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.Location</td>
+                            <td>@item.Type</td>
+                            <td>@item.Artist?.Name</td>
+                            <td>@item.DateTime.ToString("MM/dd/yyyy")</td>
+                            <td>
+                                <!-- Details Button -->
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-details btn-sm">
+                                    Details
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <!-- Message no event-->
+                    <tr>
+                        <td colspan="6" class="text-center text-warning" style="padding: 20px; font-size: 1.1rem;">
+                            No events found matching your filters. Please try again with different options.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+</div>

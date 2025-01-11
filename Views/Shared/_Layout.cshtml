@@ -1,6 +1,6 @@
-﻿@using System.Security.Claims
+@using System.Security.Claims
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head class="bg-gradient-to-b from-gray-900 to-black min-h-screen text-white">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -28,13 +28,31 @@
                                 <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Index">Index</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Index">Manage Users</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
                             </li>
+
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Chatroom" asp-action="Index">Chatroom</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Chatroom" asp-action="Index">Chatrooms</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Artists" asp-action="Index">Manage Artists</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Songs" asp-action="Index">Manage Songs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Genres" asp-action="Index">Manage Genres</a>
                             </li>
                             @* search *@
                             <div class="relative mx-4 text-dark">
@@ -51,8 +69,21 @@
                                 <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@Model.Id">My profile</a>
+
+                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details">My profile</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
+
+                            </li>
+
                             @* search *@
                             <div class="relative mx-4 text-dark">
                                 <input type="text"
@@ -62,7 +93,7 @@
                                        autocomplete="off">
                             </div>
                         }
-                        
+
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -72,6 +103,25 @@
             <!-- Results will be loaded here -->
         </div>
     </header>
+
+    <div class="container mt-3">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+
     <div class="container">
         <main role="main" @* class="pb-3" *@>
             @RenderBody()
@@ -83,7 +133,6 @@
             &copy; 2024 - MusicMatch - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@5.0.5/dist/browser/signalr.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -138,10 +187,10 @@
                         .catch(error => {
                             console.error('Search error:', error);
                             searchResults.innerHTML = `
-                                                <div class="text-center py-8 text-red-500">
-                                                    An error occurred while searching. Please try again.
-                                                </div>
-                                            `;
+                                                        <div class="text-center py-8 text-red-500">
+                                                            An error occurred while searching. Please try again.
+                                                        </div>
+                                                    `;
                         });
                 }, 300);
             }

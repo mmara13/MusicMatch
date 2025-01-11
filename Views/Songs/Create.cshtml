@@ -1,0 +1,37 @@
+﻿@model MusicMatch.Models.Song
+
+<h2>Add New Song</h2>
+
+<form asp-action="Create">
+    <div>
+        <label for="Title">Title</label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+    <div>
+        <label for="ArtistId">Artist</label>
+        <select asp-for="ArtistId" asp-items="@(new SelectList(ViewBag.Artists, "Id", "Name"))" class="form-control">
+            <option value="">-- Select an Artist --</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="GenreId">Genre</label>
+        <select asp-for="GenreId" asp-items="@(new SelectList(ViewBag.Genres, "Id", "Name"))" class="form-control">
+            <option value="">-- Select a Genre --</option>
+        </select>
+    </div>
+    <div>
+        <label for="Mood">Mood</label>
+        <select asp-for="Mood" asp-items="@(new SelectList(ViewBag.Moods))" class="form-control"></select>
+    </div>
+    <div>
+        <label for="Duration">Duration</label>
+        <input asp-for="Duration" class="form-control" type="text" placeholder="hh:mm:ss" />
+    </div>
+    <div class="form-group">
+        <label asp-for="ReleaseDate" class="control-label">Release Date</label>
+        <input asp-for="ReleaseDate" type="date" class="form-control" />
+        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

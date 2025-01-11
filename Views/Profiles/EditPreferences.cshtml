@@ -22,22 +22,19 @@
     </div>
 
     <div class="form-group">
-        <label for="artists">Favorite Artists:</label>
+        <label for="artists">Favorite Artists (select up to 5):</label>
         @if (ViewBag.LikedArtists != null && ((IEnumerable<Artist>)ViewBag.LikedArtists).Count() > 0)
         {
-            <div class="artist-container">
+
+            <select id="artists" name="UserPreferencesArtists" class="form-control" multiple size="5">
                 @foreach (var artist in ViewBag.LikedArtists)
                 {
-                    <div class="artist-card">
-                        <input type="checkbox" id="artist-@artist.Id" name="UserPreferencesArtists" value="@artist.Id"
-                        @(Model.UserPreferencesArtists.Any(upa => upa.ArtistId == artist.Id) ? "checked" : "") />
-                        <label for="artist-@artist.Id">
-                            <img src="@artist.ProfileImageUrl" alt="@artist.Name" class="artist-image" />
-                            <p class="artist-name">@artist.Name</p>
-                        </label>
-                    </div>
+                    <option value="@artist.Id"
+                            selected="@(Model.UserPreferencesArtists.Any(upa => upa.ArtistId == artist.Id))">
+                        @artist.Name
+                    </option>
                 }
-            </div>
+            </select>
         }
         else
         {

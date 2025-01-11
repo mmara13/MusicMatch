@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
 using MusicMatch.Models;
+using System.Text.RegularExpressions;
 
 namespace MusicMatch.Controllers
 {
@@ -32,6 +33,7 @@ namespace MusicMatch.Controllers
         {
             var songsQuery = _context.Songs
                     .Include(s => s.Artist)
+                    .Include(s => s.Genre)
                     .AsQueryable(); // Ensures compatibility with the Where clause
 
             if (!string.IsNullOrWhiteSpace(searchString))
@@ -39,7 +41,7 @@ namespace MusicMatch.Controllers
                 songsQuery = songsQuery.Where(s =>
                     s.Title.Contains(searchString) ||
                     s.Artist.Name.Contains(searchString) ||
-                    (s.Genre != null && s.Genre.Contains(searchString))
+                    (s.Genre != null && s.Genre.Name.Contains(searchString))
                 );
             }
 
@@ -53,6 +55,7 @@ namespace MusicMatch.Controllers
 
             var song = await _context.Songs
                 .Include(s => s.Artist)
+                .Include(s => s.Genre)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (song == null) return NotFound();
@@ -60,11 +63,20 @@ namespace MusicMatch.Controllers
             return View(song);
         }
 
+        private bool IsValidDuration(string duration)
+        {
+            // Regex pentru validarea hh:mm:ss
+            var regex = new Regex(@"^([0-9]{2}):([0-9]{2}):([0-9]{2})$");
+            return regex.IsMatch(duration);
+        }
+
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             PopulateViewData();
-            return View();
+            Song song = new Song();
+            
+            return View(song);
         }
 
         [HttpPost]
@@ -78,10 +90,28 @@ namespace MusicMatch.Controllers
                 return View(song);
             }
 
+            if (!string.IsNullOrEmpty(song.Duration.ToString()))
+            {
+                if (!IsValidDuration(song.Duration.ToString()))
+                {
+                    ModelState.AddModelError("Duration", "Invalid format. Please enter in hh:mm:ss format.");
+                    return View(song);
+                }
+
+                var timeParts = song.Duration.ToString().Split(':');
+                if (timeParts.Length == 3) // Asigură-te că ai ore, minute și secunde
+                {
+                    song.Duration = new TimeSpan(int.Parse(timeParts[0]), int.Parse(timeParts[1]), int.Parse(timeParts[2]));
+                }
+            }
+
             _context.Add(song);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Song added successfully!";
             return RedirectToAction(nameof(Index));
         }
+
+
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
@@ -108,10 +138,70 @@ namespace MusicMatch.Controllers
                 return View(song);
             }
 
+            if (!string.IsNullOrEmpty(song.Duration.ToString()))
+            {
+                var timeParts = song.Duration.ToString().Split(':');
+                if (timeParts.Length == 3) // Asigură-te că ai ore, minute și secunde
+                {
+                    song.Duration = new TimeSpan(int.Parse(timeParts[0]), int.Parse(timeParts[1]), int.Parse(timeParts[2]));
+                }
+            }
+
             _context.Update(song);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Song updated successfully!";
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToFavorites(int songId)
+        {
+            // Găsește utilizatorul curent
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(); // Utilizatorul nu este autentificat
+            }
+
+            // Găsește UserPreferencesForm pentru utilizatorul curent
+            var userPreferences = await _context.UserPreferencesForms
+                .Include(upf => upf.UserPreferencesSongs)
+                .FirstOrDefaultAsync(upf => upf.UserId == userId);
+
+            if (userPreferences == null)
+            {
+                // Creează UserPreferencesForm dacă nu există
+                userPreferences = new UserPreferencesForm
+                {
+                    UserId = userId,
+                };
+                _context.UserPreferencesForms.Add(userPreferences);
+                await _context.SaveChangesAsync();
+            }
+
+            // Verifică dacă acest cântec este deja favorit
+            if (userPreferences.UserPreferencesSongs.Any(ups => ups.SongId == songId))
+            {
+                TempData["ErrorMessage"] = "This song is already in your favorites.";
+                return RedirectToAction("Details", "Songs", new { id = songId });
+                // Redirecționează la pagina Index
+            }
+
+            // Adaugă cântecul la preferințe
+            var userPreferenceSong = new UserPreferencesSong
+            {
+                SongId = songId,
+                UserPreferencesFormId = userPreferences.Id
+            };
+            _context.UserPreferencesSongs.Add(userPreferenceSong);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Song added to favorites successfully.";
+            return RedirectToAction("Details", "Songs", new { id = songId });
+            // Redirecționează la pagina Index
+        }
+
+
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
@@ -120,6 +210,7 @@ namespace MusicMatch.Controllers
 
             var song = await _context.Songs
                 .Include(s => s.Artist)
+                .Include(s => s.Genre)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (song == null) return NotFound();
@@ -137,13 +228,16 @@ namespace MusicMatch.Controllers
 
             _context.Songs.Remove(song);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Song deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
 
         private void PopulateViewData()
         {
             ViewBag.Artists = _context.Artists.ToList();
+            ViewBag.Genres = _context.Genres.ToList();
             ViewBag.Moods = new List<string> { "Happy", "Sad", "Energetic", "Calm", "Angry" };
         }
+
     }
 }

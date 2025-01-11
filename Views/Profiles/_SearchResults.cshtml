@@ -1,53 +1,135 @@
 ﻿@* Views/Profiles/_SearchResults.cshtml *@
-@model IEnumerable<ApplicationUser>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @foreach (var user in Model)
+<div class="search-results">
+
+    <!-- Afișare utilizatori -->
+    <h2 class="text-xl font-semibold mb-4">Users</h2>
+    @if (ViewBag.Users != null && ViewBag.Users.Count > 0)
     {
-        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
-            <div class="flex items-center space-x-4">
-                <div class="flex-shrink-0">
-                    @if (!string.IsNullOrEmpty(user.PhotoUrl))
-                    {
-                        <img src="@user.PhotoUrl" alt="Profile" class="w-16 h-16 rounded-full object-cover" />
-                    }
-                    else
-                    {
-                        <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                            <span class="text-2xl text-gray-500">@user.FirstName?.FirstOrDefault()@user.LastName?.FirstOrDefault()</span>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var user in ViewBag.Users)
+            {
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            @if (!string.IsNullOrEmpty(user.PhotoUrl))
+                            {
+                                <img src="@user.PhotoUrl" alt="Profile" class="w-16 h-16 rounded-full object-cover" />
+                            }
+                            else
+                            {
+                                <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <span class="text-2xl text-gray-500">@user.FirstName?.FirstOrDefault()@user.LastName?.FirstOrDefault()</span>
+                                </div>
+                            }
                         </div>
-                    }
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-lg font-semibold">@user.FirstName @user.LastName</h3>
-                    @{
-                        var preferences = ViewData[$"Preferences_{user.Id}"] as UserPreferencesForm;
-                        if (preferences?.UserPreferencesArtists?.Any() == true)
-                        {
-                            <p class="text-sm text-gray-600">
-                                Likes @preferences.UserPreferencesArtists.First().Artist.Name
-                                @if (preferences.UserPreferencesArtists.Count > 1)
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold">@user.FirstName @user.LastName</h3>
+                            @{
+                                var preferences = ViewData[$"Preferences_{user.Id}"] as UserPreferencesForm;
+                                if (preferences?.UserPreferencesArtists?.Any() == true)
                                 {
-                                    <span>and @(preferences.UserPreferencesArtists.Count - 1) more</span>
+                                    <p class="text-sm text-gray-600">
+                                        Likes @preferences.UserPreferencesArtists.First().Artist.Name
+                                        @if (preferences.UserPreferencesArtists.Count > 1)
+                                        {
+                                            <span>and @(preferences.UserPreferencesArtists.Count - 1) more</span>
+                                        }
+                                    </p>
                                 }
-                            </p>
-                        }
-                    }
+                            }
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="@Url.Action("Details", "Profiles", new { id = user.Id })"
+                           class="w-full inline-flex justify-center items-center px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors duration-200">
+                            View Profile
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="mt-4">
-                <a href="@Url.Action("Details", "Profiles", new { id = user.Id })"
-                   class="w-full inline-flex justify-center items-center px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors duration-200">
-                    View Profile
-                </a>
-            </div>
+            }
         </div>
     }
-</div>
-
-@if (!Model.Any())
-{
-    <div class="text-center py-8">
+    else
+    {
         <p class="text-gray-500">No users found matching your search.</p>
-    </div>
-}
+    }
+
+    <!-- Afișare cântece -->
+    <h2 class="text-xl font-semibold mt-8 mb-4">Songs</h2>
+    @if (ViewBag.Songs != null && ViewBag.Songs.Count > 0)
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var song in ViewBag.Songs)
+            {
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
+                    <h3 class="text-lg font-semibold">@song.Title</h3>
+                    <p class="text-sm text-gray-600">
+                        Artist: @song.Artist?.Name
+                    </p>
+                    @if (!string.IsNullOrEmpty(song.Genre))
+                    {
+                        <p class="text-sm text-gray-500">Genre: @song.Genre</p>
+                    }
+                    <div class="mt-4">
+                        <a href="@Url.Action("Details", "Songs", new { id = song.Id })"
+                           class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors duration-200">
+                            View Song Details
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+    }
+    else
+    {
+        <p class="text-gray-500">No songs found matching your search.</p>
+    }
+
+    <h2 class="text-xl font-semibold mt-8 mb-4">Artists</h2>
+    @if (ViewBag.Artists != null && ViewBag.Artists.Count > 0)
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var artist in ViewBag.Artists)
+            {
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            @if (!string.IsNullOrEmpty(artist.PhotoUrl))
+                            {
+                                <img src="@artist.PhotoUrl" alt="Artist Photo" class="w-16 h-16 rounded-full object-cover" />
+                            }
+                            else
+                            {
+                                <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <span class="text-2xl text-gray-500">@artist.Name?.FirstOrDefault()</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold">@artist.Name</h3>
+                            @if (!string.IsNullOrEmpty(artist.Bio))
+                            {
+                                <p class="text-sm text-gray-600">@artist.Bio</p>
+                            }
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="@Url.Action("Details", "Artists", new { id = artist.Id })"
+                           class="w-full inline-flex justify-center items-center px-4 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors duration-200">
+                            View Artist Details
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+    }
+    else
+    {
+        <p class="text-gray-500">No artists found matching your search.</p>
+    }
+
+
+</div>
