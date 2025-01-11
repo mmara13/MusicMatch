@@ -8,6 +8,11 @@ namespace MusicMatch.Hubs
         // Join a group (chat room)
         public async Task JoinChatRoom(int chatroomId)
         {
+            if (chatroomId <= 0)
+            {
+                throw new ArgumentException("Invalid chatroom ID.");
+            }
+
             await Groups.AddToGroupAsync(Context.ConnectionId, chatroomId.ToString());
         }
 

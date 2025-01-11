@@ -27,6 +27,12 @@ namespace MusicMatch.Controllers
             _userManager = userManager;
             _hubContext = hubContext;
         }
+        public async Task<string> GetUsernameById(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId); 
+            return user?.UserName ?? "Unknown";
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> SendMessage(int chatroomId, string content)
@@ -59,13 +65,15 @@ namespace MusicMatch.Controllers
                 Content = content,
                 Timestamp = DateTime.Now,
                 UserId = user.Id // Use the authenticated user's ID
+                
             };
+            var username = GetUsernameById(message.UserId);
 
             // Add the message to the chatroom
             chatRoom.Messages.Add(message);
             await _db.SaveChangesAsync();
 
-            // Notify all clients connected to the chatroom via SignalR
+          
             await _hubContext.Clients.Group(chatroomId.ToString())
                 .SendAsync("ReceiveMessage", user.UserName, content);
 

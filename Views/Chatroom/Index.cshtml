@@ -33,24 +33,25 @@
 <!-- Styling -->
 <style>
     body {
-        font-family: Arial, sans-serif;
-        background-color: #f3f4f6;
-        color: black;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f4f8;
+        color: #333;
         margin: 0;
         padding: 0;
     }
 
     .page-title {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin: 20px auto 10px;
-        color: #234687;
+        font-size: 2.8rem;
+        font-weight: 600;
+        margin: 20px 0;
+        color: #7c3cec;
         text-align: center;
+        text-transform: uppercase;
     }
 
     .chatroom-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 20px;
         padding: 20px;
         max-width: 1200px;
@@ -58,67 +59,66 @@
     }
 
     .chatroom-card {
-        background-color: #eceffb;
-        border: 2px solid #5c94ff;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #f4e7fe; /* Lighter shade of purple */
+        border: 2px solid #7c3cec; /* Main purple color */
+        border-radius: 15px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         padding: 20px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         text-align: center;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
     }
 
         .chatroom-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: #e9d2f9; /* Slightly darker purple on hover */
         }
 
     .chatroom-content h3 {
         margin: 0 0 10px;
-        font-size: 1.8rem;
-        color: #234687;
+        font-size: 1.9rem;
+        color: #7c3cec;
+        font-weight: 500;
     }
 
     .chatroom-content p {
         margin: 5px 0;
         font-size: 1rem;
+        color: #374151;
     }
 
     .chatroom-content .created-on {
-        font-size: 0.9rem;
-        color: #374151;
+        font-size: 0.95rem;
+        color: #6b7280;
     }
 
     .chatroom-actions {
-        margin-top: 15px;
+        margin-top: 20px;
     }
 
     .btn {
-        padding: 10px 20px;
-        font-size: 1rem;
+        padding: 12px 24px;
+        font-size: 1.1rem;
         color: white;
         text-decoration: none;
-        border-radius: 5px;
+        border-radius: 25px;
+        background-color: #7c3cec; /* Main purple color */
         display: inline-block;
-        transition: background-color 0.2s ease-in-out;
+        transition: background-color 0.3s ease-in-out;
+        font-weight: 600;
     }
 
-    .btn-primary {
-        background-color: #5c94ff;
-        border: none;
+    .btn-primary:hover {
+        background-color: #6a2db7; /* Darker shade of purple for hover */
     }
-
-        .btn-primary:hover {
-            background-color: #234687;
-        }
 
     .no-chatrooms-message {
         text-align: center;
-        font-family: Arial, sans-serif;
-        color: #374151;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+        color: #6b7280;
         padding: 20px;
     }
 </style>

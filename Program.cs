@@ -24,7 +24,13 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 //builder.Services.AddIdentityCore<ApplicationUser>()
 //                .AddUserManager<UserManager<ApplicationUser>>();
 
-builder.Services.AddSignalR();
+
+
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
+
 builder.Services.AddSingleton<IRazorViewEngine, RazorViewEngine>();
 builder.Services.AddControllersWithViews();
 var app = builder.Build();
