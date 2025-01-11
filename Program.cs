@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
 using MusicMatch.Models;
@@ -13,6 +14,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 //builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
+Console.WriteLine("Connection String: " + connectionString);
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
@@ -22,7 +24,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 //builder.Services.AddIdentityCore<ApplicationUser>()
 //                .AddUserManager<UserManager<ApplicationUser>>();
 
-
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IRazorViewEngine, RazorViewEngine>();
 builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
@@ -57,6 +60,21 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Map SignalR Hub and other endpoints
+app.UseEndpoints(endpoints =>
+{
+    // SignalR hub mapping
+
+    endpoints.MapHub<MusicMatch.Hubs.ChatHub>("/Chathub");
+
+
+    // Default routes for controllers and Razor Pages
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapRazorPages();
+});
 
 
 // Custom redirection logic for the root URL

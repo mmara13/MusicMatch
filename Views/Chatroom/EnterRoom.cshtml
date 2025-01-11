@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Model.Name</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #eceffb;
+            color: #000;
+        }
+
+        .chat-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .messages {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            color: black;
+        }
+
+        .message {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            max-width: 70%;
+            position: relative;
+        }
+
+            .message.user-message {
+                background-color: #5c94ff;
+                color: white;
+                margin-left: auto;
+                text-align: right;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            .message.other-message {
+                background-color: #f1f1f1;
+                color: black;
+                margin-right: auto;
+                text-align: left;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+
+            .message p {
+                margin: 0;
+            }
+
+            .message .timestamp {
+                font-size: 0.8rem;
+                color: #888;
+                text-align: right;
+            }
+
+        .send-message-form {
+            display: flex;
+            gap: 10px;
+        }
+
+            .send-message-form textarea {
+                flex-grow: 1;
+                resize: none;
+                height: 50px;
+                border-radius: 8px;
+                border: 1px solid #ddd;
+                padding: 10px;
+            }
+
+            .send-message-form button {
+                border-radius: 8px;
+            }
+
+        .back-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            Welcome to @Model.Name
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="messages" id="chatMessages">
+            @foreach (var message in Model.Messages)
+            {
+                <div class="message @(message.UserId == ViewBag.CurrentUserId ? "user-message" : "other-message")">
+                    <p><strong>@message.UserId:</strong> @message.Content</p>
+                    <p class="timestamp">Sent: @message.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                </div>
+            }
+        </div>
+
+        <!-- Send Message Form -->
+        <form id="sendMessageForm">
+            <input type="hidden" name="chatroomId" value="@Model.Id" />
+            <textarea name="content" placeholder="Write a message..." required></textarea>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+
+        <a href="/ChatRoom" class="btn btn-secondary back-button">Back to Chat Rooms</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.5/signalr.min.js"></script>
+
+    <script>
+        const chatRoomId = @Model.Id;
+        const userId = "@ViewBag.CurrentUserId";
+        const chatMessages = document.getElementById('chatMessages');
+
+        // Initialize SignalR connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .build();
+
+        // Scroll chat messages to the bottom
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Append a new message to the chat
+        function appendMessage(userId, content, timestamp) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + (userId === "@ViewBag.CurrentUserId" ? 'user-message' : 'other-message');
+            messageDiv.innerHTML = `
+                                <p><strong>${userId}:</strong> ${content}</p>
+                                <p class="timestamp">Sent: ${new Date(timestamp).toLocaleString()}</p>
+                            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // SignalR: ReceiveMessage
+        connection.on("ReceiveMessage", (userId, content, timestamp) => {
+            appendMessage(userId, content, timestamp);
+        });
+
+        // Start SignalR connection
+        connection.start()
+            .then(() => {
+                connection.invoke("JoinChatRoom", chatRoomId.toString());
+            })
+            .catch(err => console.error(err.toString()));
+
+        // Handle the form submission
+        $('#sendMessageForm').submit(function (e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const content = form.find('textarea[name="content"]').val();
+
+            if (content.trim() === '') {
+                return;
+            }
+
+            $.post('/ChatMessage/SendMessage', {
+                chatroomId: chatRoomId,
+                content: content
+            }).done(() => {
+                form.find('textarea[name="content"]').val(''); // Clear the input
+            }).fail(() => {
+                alert("Failed to send the message.");
+            });
+        });
+
+        // Scroll to the bottom on page load
+        scrollToBottom();
+    </script>
+</body>
+</html>

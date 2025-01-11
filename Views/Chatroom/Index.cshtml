@@ -1,0 +1,124 @@
+﻿@model IEnumerable<MusicMatch.Models.ChatRoom>
+
+@{
+    ViewData["Title"] = "Chat Rooms";
+}
+
+<h1 class="page-title">Chatrooms</h1>
+
+<div class="chatroom-grid">
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var chatRoom in Model)
+        {
+            <div class="chatroom-card">
+                <div class="chatroom-content">
+                    <h3>@chatRoom.Name</h3>
+                    <p class="created-on">Created on: @chatRoom.CreatedAt.ToString("yyyy-MM-dd")</p>
+                </div>
+                <div class="chatroom-actions">
+                    <a asp-controller="ChatRoom" asp-action="EnterRoom" asp-route-id="@chatRoom.Id" class="btn btn-primary">
+                        Join Room
+                    </a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="no-chatrooms-message">No chat rooms available at the moment.</p>
+    }
+</div>
+
+<!-- Styling -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f3f4f6;
+        color: black;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 20px auto 10px;
+        color: #234687;
+        text-align: center;
+    }
+
+    .chatroom-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .chatroom-card {
+        background-color: #eceffb;
+        border: 2px solid #5c94ff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .chatroom-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+    .chatroom-content h3 {
+        margin: 0 0 10px;
+        font-size: 1.8rem;
+        color: #234687;
+    }
+
+    .chatroom-content p {
+        margin: 5px 0;
+        font-size: 1rem;
+    }
+
+    .chatroom-content .created-on {
+        font-size: 0.9rem;
+        color: #374151;
+    }
+
+    .chatroom-actions {
+        margin-top: 15px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        display: inline-block;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .btn-primary {
+        background-color: #5c94ff;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #234687;
+        }
+
+    .no-chatrooms-message {
+        text-align: center;
+        font-family: Arial, sans-serif;
+        color: #374151;
+        font-size: 1.2rem;
+        padding: 20px;
+    }
+</style>
