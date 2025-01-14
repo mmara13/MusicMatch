@@ -1,25 +1,28 @@
-﻿// wwwroot/js/search.js
-document.addEventListener('DOMContentLoaded', function () {
+﻿document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('navbarSearch');
     const searchResultsDropdown = document.getElementById('searchResultsDropdown');
     let searchTimeout;
 
-    if (!searchInput || !searchResultsDropdown) {
+    // Remove any existing event listeners
+    const newSearchInput = searchInput.cloneNode(true);
+    searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+
+    if (!newSearchInput || !searchResultsDropdown) {
         console.error('Search elements not found!');
         return;
     }
 
-    searchInput.addEventListener('input', handleSearch);
-    searchInput.addEventListener('keypress', function (e) {
+    newSearchInput.addEventListener('input', handleSearch);
+    newSearchInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission if within a form
             handleSearch(e);
         }
     });
 
     function handleSearch(e) {
         clearTimeout(searchTimeout);
-        const query = searchInput.value.trim();
-
+        const query = newSearchInput.value.trim();
         console.log('Search query:', query); // Debug log
 
         if (query.length === 0) {
@@ -50,17 +53,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(error => {
                     console.error('Search error:', error);
                     searchResultsDropdown.innerHTML = `
-                    <div class="p-4 text-center text-red-500">
-                        ${error.message || 'An error occurred while searching. Please try again.'}
-                    </div>
-                `;
+                        <div class="p-4 text-center text-red-500">
+                            ${error.message || 'An error occurred while searching. Please try again.'}
+                        </div>
+                    `;
                 });
         }, 300);
     }
 
     // Close dropdown when clicking outside
     document.addEventListener('click', function (e) {
-        if (!searchInput.contains(e.target) && !searchResultsDropdown.contains(e.target)) {
+        if (!newSearchInput.contains(e.target) && !searchResultsDropdown.contains(e.target)) {
             searchResultsDropdown.classList.add('hidden');
         }
     });
