@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
+using MusicMatch.Services;
 using MusicMatch.Models;
 
 namespace MusicMatch.Controllers
@@ -14,11 +15,13 @@ namespace MusicMatch.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly NotificationService _notificationService;
 
         public EventsController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager
+            RoleManager<IdentityRole> roleManager,
+            NotificationService notificationService
             )
         {
             _context = context;
@@ -26,6 +29,9 @@ namespace MusicMatch.Controllers
             _userManager = userManager;
 
             _roleManager = roleManager;
+
+            _notificationService = notificationService;
+
         }
 
         // GET: Events
@@ -55,6 +61,7 @@ namespace MusicMatch.Controllers
             {
                 _context.Add(@event);
                 await _context.SaveChangesAsync();
+                await _notificationService.NotifyNewEvent(@event.Id);
                 return RedirectToAction(nameof(Index));
             }
             return View(@event);

@@ -1,42 +1,60 @@
-﻿@model IEnumerable<MusicMatch.Models.Artist>
+﻿@model List<Artist>
+@{
+    ViewData["Title"] = "Manage Artists";
+    var notifications = ViewBag.Notifications as List<Notification> ?? new List<Notification>();
+}
 
-<h2>Artists</h2>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-white">Manage Artists</h1>
 
-<form asp-action="Index" method="get" class="form-inline mb-3">
-    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Search artists" />
-    <button type="submit" class="btn btn-primary ml-2">Search</button>
-</form>
+    <div class="mb-4">
+        <form asp-action="Index" method="get" class="flex">
+            <input type="text" name="searchString" class="form-control w-full px-3 py-2 rounded-l-lg" placeholder="Search artists...">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-lg">Search</button>
+        </form>
+    </div>
 
-<table class="table text-light">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Songs</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach (var artist in Model)
         {
-            <tr>
-                <td>@artist.Name</td>
-                <td>@artist.Songs?.Count</td>
-                <td>
-                   
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a asp-action="Details" asp-route-id="@artist.Id" class="btn btn-info">Details</a>
-                        <a asp-action="Edit" asp-route-id="@artist.Id" class="btn btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@artist.Id" class="btn btn-danger">Delete</a>
-                    }
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-white mb-2">@artist.Name</h2>
 
-                </td>
-            </tr>
+                    <div class="flex justify-between items-center mt-4">
+                        <a asp-action="Details" asp-route-id="@artist.Id"
+                           class="text-blue-400 hover:text-blue-300">View Details</a>
+
+                        <div class="flex space-x-2">
+                            <a asp-action="Edit" asp-route-id="@artist.Id"
+                               class="text-green-400 hover:text-green-300">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@artist.Id"
+                               class="text-red-400 hover:text-red-300">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center text-gray-500 py-8">
+            <p>No artists found.</p>
+        </div>
+    }
+
+    @* Notifications Partial *@
+    @if (notifications.Any())
+    {
+        <div class="mt-8 bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-4 text-white">Recent Notifications</h2>
+            @await Html.PartialAsync("_NotificationsList", notifications)
+        </div>
+    }
+</div>
 
 @if (User.IsInRole("Admin"))
 {
-    <a asp-action="Create" class="btn btn-success">Add New Artist</a>
+    <a asp-action="Create" class="btn btn-success">Add New Song</a>
 }

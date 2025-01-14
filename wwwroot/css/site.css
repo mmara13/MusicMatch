@@ -16,3 +16,57 @@ html {
 body {
   margin-bottom: 60px;
 }
+@keyframes slide-up {
+    from
+
+{
+    transform: translateY(100%);
+    opacity: 0;
+}
+
+to {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+}
+
+.animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+}
+
+/* Ensure search results and notifications are visible */
+#searchResultsDropdown,
+#notifications-dropdown {
+    background: white;
+    color: #1a202c;
+    z-index: 1000;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.notification-item,
+.search-result-item {
+    background: white;
+    color: #1a202c;
+}
+
+    /* Style for unread notifications */
+    .notification-item.unread {
+        background-color: #f0f9ff;
+        border-left: 4px solid #3b82f6;
+    }
+
+#notifications-dropdown {
+    background: white;
+    color: #1a202c;
+    min-width: 320px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.notification-item {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
