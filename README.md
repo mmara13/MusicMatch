@@ -26,3 +26,10 @@ Uniquely matches people through the emotional connection of music preferences. I
 - [Julia Grasu](https://github.com/JuliaG03)
 - [Andreea Capitanu](https://github.com/CapitanuAndreea)
 
+## Setup
+After cloning, install SignalR client library:
+1. Right-click project in Solution Explorer
+2. Add > Client-Side Library
+3. Provider: unpkg
+4. Library: @microsoft/signalr@latest
+5. Target Location: wwwroot/lib/microsoft/signalr/
