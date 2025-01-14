@@ -1,0 +1,41 @@
+﻿@using MusicMatch.Models
+@model IEnumerable<Notification>
+@{
+    ViewData["Title"] = "All Notifications";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">All Notifications</h1>
+
+    <div class="space-y-4">
+        @if (Model?.Any() == true)
+        {
+            @foreach (var notification in Model)
+            {
+                <div class="bg-white rounded-lg shadow-md p-4 @(!notification.IsRead ? "border-l-4 border-blue-500" : "")"
+                     data-notification-id="@notification.Id">
+                    <div class="flex justify-between">
+                        <div>
+                            <h3 class="font-semibold">@notification.Title</h3>
+                            <p class="text-gray-600">@notification.Message</p>
+                            <span class="text-sm text-gray-500">
+                                @notification.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+                            </span>
+                        </div>
+                        @if (!notification.IsRead)
+                        {
+                            <button onclick="markAsRead(@notification.Id)"
+                                    class="text-blue-500 hover:text-blue-700">
+                                Mark as read
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center text-gray-500">No notifications yet</p>
+        }
+    </div>
+</div>

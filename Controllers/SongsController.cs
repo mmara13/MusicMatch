@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
 using MusicMatch.Models;
+using MusicMatch.Services;
 using System.Text.RegularExpressions;
 
 namespace MusicMatch.Controllers
@@ -15,11 +16,13 @@ namespace MusicMatch.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly NotificationService _notificationService;
 
         public SongsController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager
+            RoleManager<IdentityRole> roleManager,
+            NotificationService notificationService
             )
         {
             _context = context;
@@ -27,6 +30,7 @@ namespace MusicMatch.Controllers
             _userManager = userManager;
 
             _roleManager = roleManager;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index(string searchString)
@@ -107,6 +111,7 @@ namespace MusicMatch.Controllers
 
             _context.Add(song);
             await _context.SaveChangesAsync();
+            await _notificationService.NotifyNewSong(song.Id);
             TempData["SuccessMessage"] = "Song added successfully!";
             return RedirectToAction(nameof(Index));
         }
