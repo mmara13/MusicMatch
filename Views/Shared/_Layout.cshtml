@@ -1,6 +1,6 @@
 @using System.Security.Claims
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head class="bg-gradient-to-b from-gray-900 to-black min-h-screen text-white">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,84 +13,105 @@
 </head>
 <body class="bg-gradient-to-b from-gray-900 to-black min-h-screen text-white">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light  border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">MusicMatch</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (User.IsInRole("Admin"))
+                        @if (User.Identity.IsAuthenticated)
                         {
+                            <!-- Common Navigation Items for All Authenticated Users -->
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link text-light" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
+                                <a class="nav-link text-light" asp-controller="Profiles" asp-action="Details"
+                                   asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My Profile</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
+                                <a class="nav-link text-light" asp-controller="Events" asp-action="Index">Events</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Index">Manage Users</a>
+                                <a class="nav-link text-light" asp-controller="Playlists" asp-action="Index">My Playlists</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Artists" asp-action="Index">Manage Artists</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Songs" asp-action="Index">Manage Songs</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Genres" asp-action="Index">Manage Genres</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
-                            </li>
-                            
-                            @* search *@
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <!-- Admin-Only Navigation Items -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-light" href="#" id="adminDropdown" role="button"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        Admin Panel
+                                    </a>
+                                    <ul class="dropdown-menu bg-dark" aria-labelledby="adminDropdown">
+                                        <li>
+                                            <a class="dropdown-item text-light hover:bg-gray-700"
+                                               asp-controller="Users" asp-action="Index">Manage Users</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-light hover:bg-gray-700"
+                                               asp-controller="Artists" asp-action="Index">Manage Artists</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-light hover:bg-gray-700"
+                                               asp-controller="Songs" asp-action="Index">Manage Songs</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-light hover:bg-gray-700"
+                                               asp-controller="Genres" asp-action="Index">Manage Genres</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+
+                            <!-- Search Bar for All Authenticated Users -->
                             <div class="relative mx-4 text-dark">
                                 <input type="text"
                                        id="navbarSearch"
-                                       placeholder="Search artists, songs, users..."
+                                       placeholder="Search for users, songs, artists..."
                                        class="w-64 px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
                                        autocomplete="off">
+                                <div id="searchResultsDropdown"
+                                     class="hidden absolute left-0 right-0 mt-2 bg-white rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto text-gray-800">
+                                </div>
+                            </div>
+
+                            <!-- Notification Bell for All Authenticated Users -->
+                            @* <a href="@Url.Action("Index", "Notifications")" class="block text-center text-blue-500 hover:text-blue-700 mt-4">
+                                View All
+                            </a> *@
+                            <!-- Add this where you want the bell to appear in your navbar -->
+                            <div class="relative" id="notification-bell">
+                                <button class="p-2 hover:bg-gray-700 rounded-full relative" onclick="toggleNotificationsDropdown()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                    <span id="unread-count" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                        0
+                                    </span>
+                                </button>
+                                <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Notifications</h3>
+                                        <div id="notifications-list">
+                                            <!-- Notifications will be loaded here -->
+                                        </div>
+                                        <a href="@Url.Action("Index", "Notifications")" class="block text-center text-blue-500 hover:text-blue-700 mt-4 py-2">
+                                            View All Notifications
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         }
-                        @if (User.IsInRole("User"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Profiles" asp-action="Details" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My profile</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Playlists" asp-action="Index">My Playlists</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Events" asp-action="Index">Events</a>
-                            </li>
-                            
-                            @* search *@
-                            <div class="relative mx-4 text-dark">
-                                <input type="text"
-                                       id="navbarSearch"
-                                       placeholder="Search artists, songs, users..."
-                                       class="w-64 px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
-                                       autocomplete="off">
-                            </div>
-                        }
-                        
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
-        <div id="searchResults" class="container mx-auto px-4 py-8 text-dark">
-            <!-- Results will be loaded here -->
-        </div>
     </header>
 
     <div class="container mt-3">
@@ -110,9 +131,8 @@
         }
     </div>
 
-
     <div class="container">
-        <main role="main" @* class="pb-3" *@>
+        <main role="main">
             @RenderBody()
         </main>
     </div>
@@ -122,68 +142,13 @@
             &copy; 2024 - MusicMatch - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @* <script src="https://cdn.tailwindcss.com"></script> *@
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/notifications.js"></script>
+    <script src="~/js/search.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('navbarSearch');
-            const searchResults = document.getElementById('searchResults');
-            let searchTimeout;
-
-            if (!searchInput || !searchResults) {
-                console.error('Search elements not found!');
-                return;
-            }
-
-            // Handle both input changes and enter key
-            searchInput.addEventListener('input', handleSearch);
-            searchInput.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    handleSearch(e);
-                }
-            });
-
-            function handleSearch(e) {
-                clearTimeout(searchTimeout);
-                const query = e.target.value.trim();
-
-                // Debug log
-                console.log('Searching for:', query);
-
-                searchTimeout = setTimeout(() => {
-                    if (query.length === 0) {
-                        searchResults.innerHTML = '';
-                        return;
-                    }
-
-                    // Show loading state
-                    searchResults.innerHTML = '<div class="text-center py-8">Searching...</div>';
-
-                    fetch(`/Profiles/SearchPartial?query=${encodeURIComponent(query)}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            return response.text();
-                        })
-                        .then(html => {
-                            searchResults.innerHTML = html;
-                            console.log('Search results updated');
-                        })
-                        .catch(error => {
-                            console.error('Search error:', error);
-                            searchResults.innerHTML = `
-                                                <div class="text-center py-8 text-red-500">
-                                                    An error occurred while searching. Please try again.
-                                                </div>
-                                            `;
-                        });
-                }, 300);
-            }
-        });
-    </script>
 </body>
 </html>
