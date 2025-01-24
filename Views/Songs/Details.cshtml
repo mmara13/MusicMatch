@@ -24,7 +24,6 @@
 
 <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
 
-
 @if (User.IsInRole("Admin"))
 {
     <a asp-action="Index" class="btn btn-secondary">Back to List</a>
@@ -34,3 +33,9 @@
 <form asp-action="AddToFavorites" asp-route-songId="@Model.Id" method="post" class="d-inline">
     <button type="submit" class="btn btn-success">Add to Favorites</button>
 </form>
+
+<form action="/Songs/SelectPlaylistForSong" method="get" class="d-inline">
+    <input type="hidden" name="songId" value="@Model.Id" />
+    <button type="submit" class="btn btn-primary">Add to Playlist</button>
+</form>
+

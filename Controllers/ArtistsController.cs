@@ -118,21 +118,18 @@ namespace MusicMatch.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToFavorites(int artistId)
         {
-            // Găsește utilizatorul curent
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized(); // Utilizatorul nu este autentificat
+                return Unauthorized();
             }
 
-            // Găsește UserPreferencesForm pentru utilizatorul curent
             var userPreferences = await db.UserPreferencesForms
                 .Include(upf => upf.UserPreferencesArtists)
                 .FirstOrDefaultAsync(upf => upf.UserId == userId);
 
             if (userPreferences == null)
             {
-                // Creează UserPreferencesForm dacă nu există
                 userPreferences = new UserPreferencesForm
                 {
                     UserId = userId,
@@ -141,14 +138,12 @@ namespace MusicMatch.Controllers
                 await db.SaveChangesAsync();
             }
 
-            // Verifică dacă acest artist este deja favorit
             if (userPreferences.UserPreferencesArtists.Any(upa => upa.ArtistId == artistId))
             {
                 TempData["ErrorMessage"] = "This artist is already in your favorites.";
-                return RedirectToAction("Details", "Artists", new { id = artistId }); // Redirecționează la pagina Index
+                return RedirectToAction("Details", "Artists", new { id = artistId });
             }
 
-            // Adaugă artistul la preferințe
             var userPreferenceArtist = new UserPreferencesArtist
             {
                 ArtistId = artistId,
@@ -158,7 +153,7 @@ namespace MusicMatch.Controllers
             await db.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Artist added to favorites successfully.";
-            return RedirectToAction("Details", "Artists", new { id = artistId });  // Redirecționează la pagina Index
+            return RedirectToAction("Details", "Artists", new { id = artistId });
         }
 
 
