@@ -33,6 +33,8 @@ namespace MusicMatch.Data
         public DbSet<UserPreferencesForm> UserPreferencesForms { get; set; }
         public DbSet<UserPreferencesArtist> UserPreferencesArtists { get; set; }
         public DbSet<UserPreferencesSong> UserPreferencesSongs { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -230,6 +232,42 @@ namespace MusicMatch.Data
                 .HasOne(upa => upa.Artist)
                 .WithMany(a => a.UserPreferencesArtists)
                 .HasForeignKey(upa => upa.ArtistId);
+
+            modelBuilder.Entity<Notification>()
+           .HasOne(n => n.User)
+           .WithMany()
+           .HasForeignKey(n => n.UserId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.SenderUser)
+                .WithMany()
+                .HasForeignKey(n => n.SenderUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.Property(e => e.UserId).IsRequired();
+                entity.Property(e => e.Title).IsRequired();
+                entity.Property(e => e.Message).IsRequired();
+                entity.Property(e => e.Type).IsRequired().HasDefaultValue("General");
+                entity.Property(e => e.Status).IsRequired().HasDefaultValue("Unread");
+
+                entity.HasOne(n => n.User)
+                      .WithMany()
+                      .HasForeignKey(n => n.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(n => n.Artist)
+                      .WithMany()
+                      .HasForeignKey(n => n.ArtistId)
+                      .IsRequired(false);
+
+                entity.HasOne(n => n.SenderUser)
+                      .WithMany()
+                      .HasForeignKey(n => n.SenderUserId)
+                      .IsRequired(false);
+            });
 
 
         }

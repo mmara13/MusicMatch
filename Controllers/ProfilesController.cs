@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
 using MusicMatch.Models;
 using System.IO;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MusicMatch.Controllers
@@ -384,105 +385,104 @@ namespace MusicMatch.Controllers
         }
 
 
-
-        //search
-
-        // Add these methods to your ProfilesController class
-        // de decomentat daca crapa
-        //[HttpGet]
-        //public async Task<IActionResult> Search(string query)
-        //{
-        //    if (string.IsNullOrWhiteSpace(query))
-        //    {
-        //        return View(new List<ApplicationUser>());
-        //    }
-
-        //    var users = await _userManager.Users
-        //        .Where(u => u.FirstName.Contains(query) ||
-        //                    u.LastName.Contains(query) ||
-        //                    u.Email.Contains(query))
-        //        .Take(20) // Limit results
-        //        .ToListAsync();
-
-        //    // Add preferences data for each user
-        //    foreach (var user in users)
-        //    {
-        //        var preferences = await db.UserPreferencesForms
-        //            .Include(upf => upf.UserPreferencesSongs)
-        //                .ThenInclude(ups => ups.Song)
-        //            .Include(upf => upf.UserPreferencesArtists)
-        //                .ThenInclude(upa => upa.Artist)
-        //            .FirstOrDefaultAsync(upf => upf.UserId == user.Id);
-
-        //        ViewData[$"Preferences_{user.Id}"] = preferences;
-        //    }
-
-        //    return View(users);
-        //}
-
         [HttpGet]
         public async Task<IActionResult> SearchPartial(string query)
         {
-            if (string.IsNullOrWhiteSpace(query))
+            try
             {
-                ViewBag.Users = new List<ApplicationUser>();
-                ViewBag.Songs = new List<Song>();
-                ViewBag.Artists = new List<Artist>();
+                if (string.IsNullOrWhiteSpace(query))
+                {
+                    ViewBag.Users = new List<ApplicationUser>();
+                    ViewBag.Songs = new List<Song>();
+                    ViewBag.Artists = new List<Artist>();
+                    return PartialView("_SearchResults");
+                }
+
+                query = query.ToLower().Trim();
+
+                // Debug logging
+                Console.WriteLine($"Search query: {query}");
+
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Users search
+                var users = await _userManager.Users
+                    .Where(u => u.Id != currentUserId &&
+                               (u.FirstName.ToLower().Contains(query) ||
+                                u.LastName.ToLower().Contains(query) ||
+                                u.Email.ToLower().Contains(query)))
+                    .Take(20)
+                    .ToListAsync();
+
+                Console.WriteLine($"Found {users.Count} users");
+
+                // Artists search with null check
+                var artists = await db.Artists
+                    .Where(a => a.Name != null && a.Name.ToLower().Contains(query))
+                    .Take(20)
+                    .ToListAsync();
+
+                Console.WriteLine($"Found {artists.Count} artists");
+
+                // Songs search - separate queries for better control
+                var songsByTitle = await db.Songs
+                    .Include(s => s.Artist)
+                    .Include(s => s.Genre)
+                    .Where(s => s.Title != null && s.Title.ToLower().Contains(query))
+                    .ToListAsync();
+
+                Console.WriteLine($"Found {songsByTitle.Count} songs by title");
+
+                // Only get artist's songs if we found any artists
+                var songsByArtist = new List<Song>();
+                if (artists.Any())
+                {
+                    var artistIds = artists.Select(a => a.Id).ToList();
+                    songsByArtist = await db.Songs
+                        .Include(s => s.Artist)
+                        .Include(s => s.Genre)
+                        .Where(s => s.ArtistId.HasValue && artistIds.Contains(s.ArtistId.Value))
+                        .ToListAsync();
+
+                    Console.WriteLine($"Found {songsByArtist.Count} songs by artists");
+                }
+
+                // Combine songs and remove duplicates using distinct by ID
+                var allSongs = songsByTitle
+                    .Union(songsByArtist, new SongComparer())
+                    .Take(20)
+                    .ToList();
+
+                Console.WriteLine($"Final songs count after deduplication: {allSongs.Count}");
+
+                ViewBag.Users = users;
+                ViewBag.Songs = allSongs;
+                ViewBag.Artists = artists;
                 return PartialView("_SearchResults");
             }
-
-            // Convert query to lowercase for case-insensitive search
-            query = query.ToLower();
-
-            // Căutare utilizatori
-            var users = await _userManager.Users
-                .Where(u => u.FirstName.ToLower().Contains(query) ||
-                            u.LastName.ToLower().Contains(query) ||
-                            u.Email.ToLower().Contains(query))
-                .Take(20)
-                .ToListAsync();
-
-       
-
-            // Obține preferințele pentru fiecare utilizator
-            foreach (var user in users)
+            catch (Exception ex)
             {
-                var preferences = await db.UserPreferencesForms
-                    .Include(upf => upf.UserPreferencesSongs)
-                        .ThenInclude(ups => ups.Song)
-                    .Include(upf => upf.UserPreferencesArtists)
-                        .ThenInclude(upa => upa.Artist)
-                    .FirstOrDefaultAsync(upf => upf.UserId == user.Id);
-
-                ViewData[$"Preferences_{user.Id}"] = preferences;
+                Console.WriteLine($"Search error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return Json(new { error = $"Search error: {ex.Message}" });
             }
-
-            // Căutare cântece
-            var songs = await db.Songs
-                .Include(s => s.Artist)
-                .Where(s => s.Title.ToLower().Contains(query) ||
-                            (s.Artist != null && s.Artist.Name.ToLower().Contains(query)) ||
-                            (!string.IsNullOrEmpty(s.Genre.Name) && s.Genre.Name.ToLower().Contains(query)))
-                .Take(20)
-                .ToListAsync();
-
-            var artists = await db.Artists
-                .Where(a => a.Name.ToLower().Contains(query) ||
-                    (!string.IsNullOrEmpty(a.Bio) && a.Bio.ToLower().Contains(query)))
-                .Take(20)
-                .ToListAsync();
-
-            // Stocăm rezultatele în ViewBag
-            ViewBag.Users = users;
-            ViewBag.Songs = songs;
-            ViewBag.Artists = artists;
-
-            return PartialView("_SearchResults");
         }
 
+        // Song comparer for deduplication
+        public class SongComparer : IEqualityComparer<Song>
+        {
+            public bool Equals(Song x, Song y)
+            {
+                if (ReferenceEquals(x, y)) return true;
+                if (x is null || y is null) return false;
+                return x.Id == y.Id;
+            }
 
-
+            public int GetHashCode(Song obj)
+            {
+                return obj?.Id.GetHashCode() ?? 0;
+            }
+        }
     }
-
 
 }

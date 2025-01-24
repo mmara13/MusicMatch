@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
+using MusicMatch.Hubs;
 using MusicMatch.Models;
+using MusicMatch.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +36,15 @@ builder.Services.AddSignalR(options =>
 
 builder.Services.AddSingleton<IRazorViewEngine, RazorViewEngine>();
 builder.Services.AddControllersWithViews();
+
+//services for notifications
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<IMyEmailSender, EmailService>();
+builder.Services.AddSignalR();
 var app = builder.Build();
+
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 // PASUL 5 - useri si roluri
 
@@ -50,7 +61,8 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseMigrationsEndPoint();
+    //app.UseMigrationsEndPoint();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
