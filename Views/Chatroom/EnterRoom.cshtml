@@ -20,6 +20,7 @@
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            color: black;
         }
 
         .chat-header {
@@ -54,6 +55,7 @@
             position: relative;
             word-wrap: break-word;
             animation: fadeIn 0.3s ease-in-out;
+            color: black;
         }
 
         @@keyframes fadeIn {
@@ -69,7 +71,7 @@
 
         .message.user-message {
             background-color: #7c3cec;
-            color: white;
+            color: black;
             margin-left: auto;
             text-align: right;
             border-top-right-radius: 0;
@@ -150,7 +152,8 @@
             @foreach (var message in Model.Messages)
             {
                 <div class="message @(message.UserId == ViewBag.CurrentUserId ? "user-message" : "other-message")">
-                    <p><strong>@message.UserId:</strong> @message.Content</p>
+
+                    <p><strong>@message.Username:</strong> @message.Content</p>
                     <p class="timestamp">Sent: @message.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</p>
                 </div>
             }

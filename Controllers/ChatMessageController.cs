@@ -27,6 +27,8 @@ namespace MusicMatch.Controllers
             _userManager = userManager;
             _hubContext = hubContext;
         }
+
+
         public async Task<string> GetUsernameById(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId); 
@@ -64,10 +66,10 @@ namespace MusicMatch.Controllers
             {
                 Content = content,
                 Timestamp = DateTime.Now,
-                UserId = user.Id // Use the authenticated user's ID
-                
+                UserId = user.Id, // Use the authenticated user's ID
+                Username = user.UserName
             };
-            var username = GetUsernameById(message.UserId);
+           
 
             // Add the message to the chatroom
             chatRoom.Messages.Add(message);
