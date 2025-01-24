@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -45,29 +46,35 @@ namespace MusicMatch.Controllers
             return View(await _context.Events.Include(e => e.Artist).ToListAsync());
         }
 
-
-        // GET: Events/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+            ViewBag.Artists = _context.Artists.ToList();
             return View();
         }
 
-        // POST: Events/Create
+
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Name,Description,DateTime,Location,Type,ArtistId")] Event @event)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(@event);
                 await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Event added successfully!";
+
                 await _notificationService.NotifyNewEvent(@event.Id);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(@event);
         }
 
-        // GET: Events/Edit/5
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,12 +87,14 @@ namespace MusicMatch.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Artists = _context.Artists.ToList();
             return View(@event);
         }
 
-        // POST: Events/Edit/5
+
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,DateTime,Location,Type,ArtistId")] Event @event)
         {
             if (id != @event.Id)
@@ -99,6 +108,7 @@ namespace MusicMatch.Controllers
                 {
                     _context.Update(@event);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Event updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -116,7 +126,8 @@ namespace MusicMatch.Controllers
             return View(@event);
         }
 
-        // GET: Events/Delete/5
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,9 +145,10 @@ namespace MusicMatch.Controllers
             return View(@event);
         }
 
-        // POST: Events/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var @event = await _context.Events.FindAsync(id);
@@ -145,11 +157,12 @@ namespace MusicMatch.Controllers
                 _context.Events.Remove(@event);
             }
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Event deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
-        
+
         //-----------------------------------------------
-        
+
         [NonAction]
         private List<Event> FilterEvents(string? location, string? type = null, string? artist = null)
         {
