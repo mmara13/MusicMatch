@@ -1,0 +1,34 @@
+﻿@model IEnumerable<MusicMatch.Models.Playlist>
+
+@{
+    ViewData["Title"] = "Select Playlist";
+    int songId = (int)ViewData["SongId"];
+}
+
+<h2>Select a Playlist</h2>
+
+<table class="table text-light">
+    <thead>
+        <tr>
+            <th>Playlist Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var playlist in Model)
+        {
+            <tr>
+                <td>@playlist.Name</td>
+                <td>
+                    <form asp-controller="Playlists" asp-action="AddSongToPlaylist" method="post">
+                        <input type="hidden" name="songId" value="@songId" />
+                        <input type="hidden" name="playlistId" value="@playlist.Id" />
+                        <button type="submit" class="btn btn-success">Add to Playlist</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Songs" asp-action="Details" asp-route-id="@songId" class="btn btn-secondary">Back to Song</a>

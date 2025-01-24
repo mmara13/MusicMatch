@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Model.Name</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f0f4f8;
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .chat-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header {
+            font-size: 1.8rem;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #7c3cec;
+        }
+
+        .messages {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            max-width: 70%;
+            position: relative;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user-message {
+            background-color: #7c3cec;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .message.other-message {
+            background-color: #e9d2f9;
+            color: black;
+            margin-right: auto;
+            text-align: left;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .message .timestamp {
+            font-size: 0.8rem;
+            color: #888;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .send-message-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .send-message-form textarea {
+            flex-grow: 1;
+            resize: none;
+            height: 50px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .send-message-form button {
+            border-radius: 8px;
+            background-color: #7c3cec;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .send-message-form button:hover {
+            background-color: #6a2db7;
+        }
+
+        .back-button {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+            background-color: #7c3cec;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .back-button:hover {
+            background-color: #6a2db7;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            Welcome to @Model.Name
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="messages" id="chatMessages">
+            @foreach (var message in Model.Messages)
+            {
+                <div class="message @(message.UserId == ViewBag.CurrentUserId ? "user-message" : "other-message")">
+                    <p><strong>@message.UserId:</strong> @message.Content</p>
+                    <p class="timestamp">Sent: @message.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                </div>
+            }
+        </div>
+
+        <!-- Send Message Form -->
+        <form id="sendMessageForm" class="send-message-form">
+            <input type="hidden" name="chatroomId" value="@Model.Id" />
+            <textarea name="content" placeholder="Type your message here..." required></textarea>
+            <button type="submit">Send</button>
+        </form>
+
+        <a href="/ChatRoom" class="back-button">Back to Chat Rooms</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.5/signalr.min.js"></script>
+
+    <script>
+        const chatRoomId = @Model.Id;
+        const userId = "@ViewBag.CurrentUserId";
+        const chatMessages = document.getElementById('chatMessages');
+
+        // Initialize SignalR connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .build();
+
+        // Scroll chat messages to the bottom
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Append a new message to the chat
+        function appendMessage(userId, content, timestamp) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + (userId === "@ViewBag.CurrentUserId" ? 'user-message' : 'other-message');
+            messageDiv.innerHTML = `
+                <p><strong>${userId}:</strong> ${content}</p>
+                <p class="timestamp">${new Date(timestamp).toLocaleString()}</p>
+            `;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // SignalR: ReceiveMessage
+        connection.on("ReceiveMessage", (userId, content, timestamp) => {
+            appendMessage(userId, content, timestamp);
+        });
+
+        // Start SignalR connection
+        connection.start()
+            .then(() => {
+                const chatRoomId = parseInt(@Model.Id); // Ensure chatRoomId is an integer
+                connection.invoke("JoinChatRoom", chatRoomId)
+                    .catch(err => console.error(err.toString()));
+            });
+
+        // Handle the form submission
+        $('#sendMessageForm').submit(function (e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const content = form.find('textarea[name="content"]').val();
+
+            if (content.trim() === '') {
+                return;
+            }
+
+            $.post('/ChatMessage/SendMessage', {
+                chatroomId: chatRoomId,
+                content: content
+            }).done(() => {
+                form.find('textarea[name="content"]').val(''); // Clear the input
+            }).fail(() => {
+                alert("Failed to send the message.");
+            });
+        });
+
+        // Scroll to the bottom on page load
+        scrollToBottom();
+    </script>
+</body>
+</html>

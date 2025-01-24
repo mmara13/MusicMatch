@@ -13,5 +13,7 @@ namespace MusicMatch.Models
         public string? Description { get; set; }
 
         public virtual ICollection<UserGenre>? UserGenres { get; set; }
+
+        public virtual ICollection<Song>? Songs { get; set; }
     }
 }

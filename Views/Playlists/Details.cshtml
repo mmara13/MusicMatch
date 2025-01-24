@@ -1,0 +1,70 @@
+﻿@model MusicMatch.Models.Playlist
+
+<div class="container mt-5">
+    <div class="card shadow-lg" style="background-color: #343a40; color: white;">
+        <div class="card-header bg-primary text-white">
+            <h2 class="text-center">Details for Playlist: <strong>@Model.Name</strong></h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Description:</strong> @Model.Description</p>
+                    <p><strong>Created By:</strong> @Model.User?.UserName</p>
+                    <p><strong>Created Date:</strong> @Model.CreatedDate?.ToString("f")</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Mood:</strong> @Model.Mood</p>
+                    <p><strong>Genre:</strong> @Model.Genre</p>
+                    <p>
+                        <strong>Visibility:</strong>
+                        <span class="badge @(Model.Visibility == "Public" ? "bg-success" : (Model.Visibility == "Private" ? "bg-danger" : "bg-warning"))">
+                            @Model.Visibility
+                        </span>
+                    </p>
+                    <p>
+                        <strong>Collaborative:</strong>
+                        <span class="badge @(Model.IsCollaborative ? "bg-info" : "bg-secondary")">
+                            @(Model.IsCollaborative ? "Yes" : "No")
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h3 class="text-center text-white">Songs in Playlist</h3>
+        @if (Model.Songs != null && Model.Songs.Any())
+        {
+            <table class="table table-hover text-white">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var playlistSong in Model.Songs)
+                    {
+                        <tr>
+                            <td>@playlistSong.Song?.Title</td>
+                            <td>@playlistSong.Song?.Artist?.Name</td>
+                            <td>@playlistSong.Song?.Duration</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-warning text-center">
+                No songs in this playlist yet. Start adding some hits!
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Back to Playlists</a>
+    </div>
+</div>

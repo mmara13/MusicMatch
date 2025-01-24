@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
+using MusicMatch.Services;
 using MusicMatch.Models;
+using System.Security.Claims;
 
 namespace MusicMatch.Controllers
 {
@@ -14,11 +16,14 @@ namespace MusicMatch.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly NotificationService _notificationService;
+
 
         public ArtistsController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager
+            RoleManager<IdentityRole> roleManager,
+            NotificationService notificationService
             )
         {
             db = context;
@@ -26,19 +31,30 @@ namespace MusicMatch.Controllers
             _userManager = userManager;
 
             _roleManager = roleManager;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index(string searchString)
         {
-            var artists = db.Artists.Include(a => a.Songs).AsQueryable();
+            // Fetch notifications for the current user
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var notifications = await db.Notifications
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .OrderByDescending(n => n.CreatedAt)
+                .Take(5)
+                .ToListAsync();
 
+            // Set notifications in ViewBag
+            ViewBag.Notifications = notifications;
+
+            // Your existing artist query
+            var artists = db.Artists.Include(a => a.Songs).AsQueryable();
             if (!string.IsNullOrEmpty(searchString))
             {
                 artists = artists.Where(a =>
                     (a.Name ?? "").Contains(searchString) ||
                     (a.Bio ?? "").Contains(searchString));
             }
-
             return View(await artists.ToListAsync());
         }
 
@@ -69,6 +85,7 @@ namespace MusicMatch.Controllers
 
             db.Artists.Add(artist);
             await db.SaveChangesAsync();
+            await _notificationService.NotifyNewArtist(artist.Id);
             TempData["SuccessMessage"] = "Artist added successfully!";
             return RedirectToAction(nameof(Index));
         }
@@ -101,21 +118,18 @@ namespace MusicMatch.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToFavorites(int artistId)
         {
-            // Găsește utilizatorul curent
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized(); // Utilizatorul nu este autentificat
+                return Unauthorized();
             }
 
-            // Găsește UserPreferencesForm pentru utilizatorul curent
             var userPreferences = await db.UserPreferencesForms
                 .Include(upf => upf.UserPreferencesArtists)
                 .FirstOrDefaultAsync(upf => upf.UserId == userId);
 
             if (userPreferences == null)
             {
-                // Creează UserPreferencesForm dacă nu există
                 userPreferences = new UserPreferencesForm
                 {
                     UserId = userId,
@@ -124,14 +138,12 @@ namespace MusicMatch.Controllers
                 await db.SaveChangesAsync();
             }
 
-            // Verifică dacă acest artist este deja favorit
             if (userPreferences.UserPreferencesArtists.Any(upa => upa.ArtistId == artistId))
             {
                 TempData["ErrorMessage"] = "This artist is already in your favorites.";
-                return RedirectToAction("Details", "Artists", new { id = artistId }); // Redirecționează la pagina Index
+                return RedirectToAction("Details", "Artists", new { id = artistId });
             }
 
-            // Adaugă artistul la preferințe
             var userPreferenceArtist = new UserPreferencesArtist
             {
                 ArtistId = artistId,
@@ -141,19 +153,35 @@ namespace MusicMatch.Controllers
             await db.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Artist added to favorites successfully.";
-            return RedirectToAction("Details", "Artists", new { id = artistId });  // Redirecționează la pagina Index
+            return RedirectToAction("Details", "Artists", new { id = artistId });
         }
 
 
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null) return NotFound();
+            var artist = await db.Artists
+                .Include(a => a.Songs)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-            var artist = await db.Artists.FirstOrDefaultAsync(a => a.Id == id);
-            if (artist == null) return NotFound();
+            if (artist == null)
+            {
+                return NotFound();
+            }
 
-            return View(artist);
+            // First, delete related notifications
+            var relatedNotifications = await db.Notifications
+                .Where(n => n.ArtistId == id)
+                .ToListAsync();
+
+            db.Notifications.RemoveRange(relatedNotifications);
+
+            // Then remove the artist and its songs
+            db.Songs.RemoveRange(artist.Songs);
+            db.Artists.Remove(artist);
+
+            await db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost, ActionName("Delete")]

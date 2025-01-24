@@ -1,0 +1,38 @@
+﻿@using MusicMatch.Models
+@model IEnumerable<Notification>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="p-4 text-center text-gray-500">
+        No unread notifications
+    </div>
+}
+else
+{
+    foreach (var notification in Model)
+    {
+        <div class="notification-item p-4 border-b last:border-b-0 bg-blue-50"
+             data-notification-id="@(notification?.Id ?? 0)">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="font-semibold text-gray-800">
+                        @(notification?.Title ?? "Untitled Notification")
+                    </h4>
+                    <p class="text-sm text-gray-600">
+                        @(notification?.Message ?? "No message")
+                    </p>
+                    <span class="text-xs text-gray-500">
+                        @(notification?.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy HH:mm") ?? "Unknown date")
+                    </span>
+                </div>
+                @if (notification != null)
+                {
+                    <button onclick="markAsRead(@notification.Id)"
+                            class="text-sm text-blue-500 hover:text-blue-700">
+                        Mark as read
+                    </button>
+                }
+            </div>
+        </div>
+    }
+}

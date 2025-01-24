@@ -7,6 +7,11 @@
     <button type="submit" class="btn btn-primary ml-2">Search</button>
 </form>
 
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Create" class="btn btn-success">Add New Song</a>
+}
+
 <table class="table text-light">
     <thead>
         <tr>
@@ -22,7 +27,7 @@
             <tr>
                 <td>@song.Title</td>
                 <td>@song.Artist?.Name</td>
-                <td>@song.Genre</td>
+                <td>@song.Genre?.Name</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@song.Id" class="btn btn-info">Details</a>
 
@@ -38,8 +43,3 @@
         }
     </tbody>
 </table>
-
-@if (User.IsInRole("Admin"))
-{
-    <a asp-action="Create" class="btn btn-success">Add New Song</a>
-}

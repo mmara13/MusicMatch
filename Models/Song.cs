@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicMatch.Models
 {
@@ -11,16 +13,17 @@ namespace MusicMatch.Models
         public string Title { get; set; }
 
         [Required]
-        public int ArtistId { get; set; }
+        public int? ArtistId { get; set; }
         public virtual Artist? Artist { get; set; }
 
-        public string? Genre { get; set; }
-        public string? Mood {  get; set; }
+        public int? GenreId { get; set; }
+        public virtual Genre? Genre { get; set; }
+        public string? Mood { get; set; }
 
         [Required]
         public TimeSpan Duration { get; set; }
 
-        public DateTime? ReleaseDate    { get; set; }
+        public DateTime? ReleaseDate { get; set; }
 
         public virtual ICollection<PlaylistSong>? Playlists { get; set; }
         public virtual ICollection<UserPreferencesSong>? UserPreferencesSongs { get; set; }

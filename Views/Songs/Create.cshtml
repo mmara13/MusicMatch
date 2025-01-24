@@ -13,9 +13,11 @@
             <option value="">-- Select an Artist --</option>
         </select>
     </div>
-    <div>
-        <label for="Genre">Genre</label>
-        <input asp-for="Genre" class="form-control" />
+    <div class="form-group">
+        <label for="GenreId">Genre</label>
+        <select asp-for="GenreId" asp-items="@(new SelectList(ViewBag.Genres, "Id", "Name"))" class="form-control">
+            <option value="">-- Select a Genre --</option>
+        </select>
     </div>
     <div>
         <label for="Mood">Mood</label>
