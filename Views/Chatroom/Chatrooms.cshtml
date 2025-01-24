@@ -1,0 +1,18 @@
+﻿@model IEnumerable<ChatRoom>
+
+<h1>Available Chatrooms</h1>
+
+<ul>
+    @foreach (var chatRoom in Model)
+    {
+        <li>
+            <h3>@chatRoom.Name</h3>
+            <p>Type: @chatRoom.Type</p>
+            <button>
+                <a asp-controller="Chat" asp-action="EnterRoom" asp-route-id="@chatRoom.Id">
+                    Join
+                </a>
+            </button>
+        </li>
+    }
+</ul>
