@@ -384,6 +384,7 @@ namespace MusicMatch.Controllers
             return RedirectToAction("EditPreferences");
         }
 
+
         [HttpGet]
         public async Task<IActionResult> SearchPartial(string query)
         {
@@ -432,8 +433,6 @@ namespace MusicMatch.Controllers
 
                 Console.WriteLine($"Found {songsByTitle.Count} songs by title");
 
-
-            foreach (var user in users)
                 // Only get artist's songs if we found any artists
                 var songsByArtist = new List<Song>();
                 if (artists.Any())
@@ -485,4 +484,5 @@ namespace MusicMatch.Controllers
             }
         }
     }
+
 }
