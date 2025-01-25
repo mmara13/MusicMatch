@@ -10,29 +10,31 @@
                     <h2 class="text-xl font-semibold mb-4 text-white">Users</h2>
                     @foreach (var user in ViewBag.Users)
                     {
-                        <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition duration-200">
-                            <div class="flex items-center space-x-4">
-                                <div class="flex-shrink-0">
-                                    @if (!string.IsNullOrEmpty(user.PhotoUrl))
-                                    {
-                                        <img src="@user.PhotoUrl" alt="Profile" class="w-12 h-12 rounded-full" />
-                                    }
-                                    else
-                                    {
-                                        <div class="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center">
-                                            <span class="text-xl text-white">
-                                                @((!string.IsNullOrEmpty(user.FirstName) ? user.FirstName[0].ToString() : "") +
-                                                    (!string.IsNullOrEmpty(user.LastName) ? user.LastName[0].ToString() : ""))
-                                            </span>
-                                        </div>
-                                    }
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-medium text-white">@user.FirstName @user.LastName</h3>
-                                    <p class="text-sm text-gray-300">@user.Email</p>
+                        <a asp-controller="Users" asp-action="Details" asp-route-id="@user.Id" class="block">
+                            <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition duration-200">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex-shrink-0">
+                                        @if (!string.IsNullOrEmpty(user.PhotoUrl))
+                                        {
+                                            <img src="@user.PhotoUrl" alt="Profile" class="w-12 h-12 rounded-full" />
+                                        }
+                                        else
+                                        {
+                                            <div class="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center">
+                                                <span class="text-xl text-white">
+                                                    @((!string.IsNullOrEmpty(user.FirstName) ? user.FirstName[0].ToString() : "") +
+                                                        (!string.IsNullOrEmpty(user.LastName) ? user.LastName[0].ToString() : ""))
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-medium text-white">@user.FirstName @user.LastName</h3>
+                                        <p class="text-sm text-gray-300">@user.Email</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     }
                 </div>
             }
@@ -43,33 +45,35 @@
                     <h2 class="text-xl font-semibold mb-4 text-white">Artists</h2>
                     @foreach (var artist in ViewBag.Artists)
                     {
-                        <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition duration-200">
-                            <div class="flex items-center space-x-4">
-                                <div class="flex-shrink-0">
-                                    @if (!string.IsNullOrEmpty(artist.PhotoUrl))
-                                    {
-                                        <img src="@artist.PhotoUrl" alt="Artist" class="w-12 h-12 rounded-full" />
-                                    }
-                                    else
-                                    {
-                                        <div class="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center">
-                                            <span class="text-xl text-white">
-                                                @(!string.IsNullOrEmpty(artist.Name) ? artist.Name[0].ToString() : "")
-                                            </span>
-                                        </div>
-                                    }
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-medium text-white">@artist.Name</h3>
-                                    @if (!string.IsNullOrEmpty(artist.Bio))
-                                    {
-                                        <p class="text-sm text-gray-300">
-                                            @(artist.Bio.Length > 100 ? artist.Bio[..97] + "..." : artist.Bio)
-                                        </p>
-                                    }
+                        <a asp-controller="Artists" asp-action="Details" asp-route-id="@artist.Id" class="block">
+                            <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition duration-200">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex-shrink-0">
+                                        @if (!string.IsNullOrEmpty(artist.PhotoUrl))
+                                        {
+                                            <img src="@artist.PhotoUrl" alt="Artist" class="w-12 h-12 rounded-full" />
+                                        }
+                                        else
+                                        {
+                                            <div class="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center">
+                                                <span class="text-xl text-white">
+                                                    @(!string.IsNullOrEmpty(artist.Name) ? artist.Name[0].ToString() : "")
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-medium text-white">@artist.Name</h3>
+                                        @if (!string.IsNullOrEmpty(artist.Bio))
+                                        {
+                                            <p class="text-sm text-gray-300">
+                                                @(artist.Bio.Length > 100 ? artist.Bio[..97] + "..." : artist.Bio)
+                                            </p>
+                                        }
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     }
                 </div>
             }
@@ -80,22 +84,24 @@
                     <h2 class="text-xl font-semibold mb-4 text-white">Songs</h2>
                     @foreach (var song in ViewBag.Songs)
                     {
-                        <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition duration-200">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h3 class="text-lg font-medium text-white">@song.Title</h3>
-                                    @if (song.Artist != null)
-                                    {
-                                        <p class="text-sm text-gray-300">by @song.Artist.Name</p>
-                                    }
-                                    @if (song.Genre != null)
-                                    {
-                                        <p class="text-xs text-gray-400">Genre: @song.Genre.Name</p>
-                                    }
+                        <a asp-controller="Songs" asp-action="Details" asp-route-id="@song.Id" class="block">
+                            <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition duration-200">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h3 class="text-lg font-medium text-white">@song.Title</h3>
+                                        @if (song.Artist != null)
+                                        {
+                                            <p class="text-sm text-gray-300">by @song.Artist.Name</p>
+                                        }
+                                        @if (song.Genre != null)
+                                        {
+                                            <p class="text-xs text-gray-400">Genre: @song.Genre.Name</p>
+                                        }
+                                    </div>
+                                    <span class="text-sm text-gray-300">@song.Duration.ToString(@"mm\:ss")</span>
                                 </div>
-                                <span class="text-sm text-gray-300">@song.Duration.ToString(@"mm\:ss")</span>
                             </div>
-                        </div>
+                        </a>
                     }
                 </div>
             }
