@@ -32,9 +32,18 @@
                                 <a class="nav-link text-light" asp-controller="Profiles" asp-action="Details"
                                    asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">My Profile</a>
                             </li>
+
+                            @if (User.Identity.IsAuthenticated && User.IsInRole("User"))//show only when User is logged in
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-controller="Events" asp-action="Index">Events</a>
+                                </li>
+                            }
+
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-controller="Events" asp-action="Index">Events</a>
+                                 <a class="nav-link text-light" asp-controller="Songs" asp-action="Index">My Songs</a>
                             </li>
+
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-controller="Chatroom" asp-action="Index">Chatrooms</a>
                             </li>
@@ -67,6 +76,11 @@
                                             <a class="dropdown-item text-light hover:bg-gray-700"
                                                asp-controller="Genres" asp-action="Index">Manage Genres</a>
                                         </li>
+                                        <li>
+                                            <a class="dropdown-item text-light hover:bg-gray-700"
+                                                asp-controller="Events" asp-action="Index">Manage Events</a>
+                                        </li>
+
                                     </ul>
                                 </li>
                             }
