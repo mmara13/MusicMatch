@@ -43,7 +43,10 @@ namespace MusicMatch.Controllers
                 return View(FilterEvents(location, type, artist));
             }
 
-            return View(await _context.Events.Include(e => e.Artist).ToListAsync());
+            return View(await _context.Events
+                .Include(e => e.Artist)
+                .Include(e => e.ChatRoom)
+                .ToListAsync());
         }
 
         [Authorize(Roles = "Admin")]
@@ -65,6 +68,21 @@ namespace MusicMatch.Controllers
                 await _context.SaveChangesAsync();
                 
                 TempData["SuccessMessage"] = "Event added successfully!";
+
+                var chatRoom = new ChatRoom
+                {
+                    Name = $"Event: {@event.Name}",
+                    CreatedAt = DateTime.Now,
+                    Type = "Event",
+                    RelatedId = @event.Id,
+                };
+
+                _context.Add(chatRoom);  // Add the chat room to the database
+                await _context.SaveChangesAsync();  // Save changes
+
+                @event.ChatRoom = chatRoom;
+                _context.Update(@event);
+                    await _context.SaveChangesAsync();
 
                 await _notificationService.NotifyNewEvent(@event.Id);
 
@@ -186,6 +204,7 @@ namespace MusicMatch.Controllers
             return events
                 .Include(e => e.Artist)
                 .Include(e => e.Attendees)
+                .Include(e => e.ChatRoom)
                 .ToList();
         }
 
