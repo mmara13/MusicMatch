@@ -12,6 +12,9 @@ namespace MusicMatch.Models
 
         [Required]
         public string UserId { get; set; }
+
+        [Required]
+        public string Username { get; set; }
         public virtual ApplicationUser? User { get; set; }
 
         [Required]
