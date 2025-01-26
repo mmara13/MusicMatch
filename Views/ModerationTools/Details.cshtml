@@ -1,0 +1,26 @@
+﻿@model MusicMatch.Models.UserReport
+
+<h1>Report Details</h1>
+
+<div class="card">
+    <div class="card-body">
+        <h4>Report Information</h4>
+        <p><strong>Reported User:</strong> @Model.ReportedUser.UserName</p>
+        <p><strong>Reported By:</strong> @Model.ReportedBy.UserName</p>
+        <p><strong>Reason:</strong> @Model.Reason</p>
+        <p><strong>Reported At:</strong> @Model.ReportedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+        <p><strong>Is resolved: </strong> @Model.IsResolved</p>
+
+     
+    </div>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Reports</a>
+<a asp-action="Resolve" asp-route-id="@Model.Id" class="btn btn-success">Resolve Report</a>
+<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete Report</a>
+<a asp-action="Details" asp-route-id="@Model.ReportedUserId" class="btn btn-info">View</a>
+
+<form asp-action="Delete" asp-route-id="@Model.ReportedUserId" method="post" style="display: inline;">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+</form>

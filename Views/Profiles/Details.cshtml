@@ -90,6 +90,7 @@
             </div>
         </div>
 
+
         <!-- Music Preferences Section -->
         @if (preferences != null)
         {
@@ -148,3 +149,17 @@
         }
     </div>
 </div>
+
+
+<script>
+    document.getElementById("reportButton").onclick = function() {
+        var reportForm = document.getElementById("reportForm");
+
+        // Toggle visibility of the report form
+        if (reportForm.style.display === "none") {
+            reportForm.style.display = "block";
+        } else {
+            reportForm.style.display = "none";
+        }
+    };
+</script>
