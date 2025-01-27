@@ -14,8 +14,7 @@ namespace MusicMatch.Models
         public int SongId   { get; set; }
         public virtual Song? Song { get; set; }
 
-        [Required]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public virtual ApplicationUser? User { get; set; }
 
         [Required]
