@@ -80,6 +80,9 @@ namespace MusicMatch.Controllers
 
             // Get user
             var user = await _userManager.Users
+                .Include(u => u.EventAttendances)//added by diana
+                .ThenInclude(ea => ea.Event)//added by diana
+                .ThenInclude(e => e.Artist)//added by diana
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
@@ -105,6 +108,16 @@ namespace MusicMatch.Controllers
                 .FirstOrDefaultAsync(upf => upf.UserId == id);
 
             ViewBag.UserPreferences = preferences;
+
+            //----------------------------------------------added by diana
+
+            var pastEvents = user.EventAttendances
+                .Where(ea => ea.RSVP_Status == "Going" && ea.Event.DateTime < DateTime.UtcNow)
+                .Select(ea => ea.Event)
+                .ToList();
+
+            ViewBag.PastEvents = pastEvents;
+            //----------------------------------------------
 
             return View(user);
         }
