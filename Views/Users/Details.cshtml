@@ -9,6 +9,9 @@ else
 {
     <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp" alt="Default Profile Photo" class="img-thumbnail" width="150" />
 }
+
+
+
 <h3>Favorite Genres</h3>
 <ul>
     @foreach (var genre in Model.FavoriteGenres)
@@ -34,3 +37,29 @@ else
 </ul>
 
 <a asp-action="Index" class="btn btn-secondary">Back to Users</a>
+
+<!-- Button to trigger report -->
+<form method="post" action="@Url.Action("ReportUser", "Users")" id="reportForm" style="display:none;">
+    <input type="hidden" name="ReportedUserId" value="@Model.Id" />
+    <div class="form-group">
+        <label for="reason">Reason for reporting:</label>
+        <textarea name="Reason" id="reason" class="form-control" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Report</button>
+</form>
+
+<!-- Button to trigger report -->
+<button type="button" id="reportButton" class="btn btn-danger">Report User</button>
+
+<script>
+    document.getElementById("reportButton").onclick = function() {
+        var reportForm = document.getElementById("reportForm");
+
+        // Toggle visibility of the report form
+        if (reportForm.style.display === "none") {
+            reportForm.style.display = "block";
+        } else {
+            reportForm.style.display = "none";
+        }
+    };
+</script>

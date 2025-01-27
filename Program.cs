@@ -41,7 +41,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IMyEmailSender, EmailService>();
 builder.Services.AddSignalR();
+builder.Services.AddScoped<ReportService>();
 var app = builder.Build();
+
 
 
 app.MapHub<NotificationHub>("/notificationHub");

@@ -34,6 +34,8 @@ namespace MusicMatch.Data
         public DbSet<UserPreferencesArtist> UserPreferencesArtists { get; set; }
         public DbSet<UserPreferencesSong> UserPreferencesSongs { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<UserReport> UserReports { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -270,6 +272,20 @@ namespace MusicMatch.Data
             });
 
 
+            modelBuilder.Entity<UserReport>()
+                .HasOne(r => r.ReportedBy)
+                .WithMany()
+                .HasForeignKey(r => r.ReportedById)
+                .OnDelete(DeleteBehavior.Restrict); // Restricționează ștergerea în cascadă
+
+            modelBuilder.Entity<UserReport>()
+                .HasOne(r => r.ReportedUser)
+                .WithMany()
+                .HasForeignKey(r => r.ReportedUserId)
+                .OnDelete(DeleteBehavior.Restrict); // Restricționează ștergerea în cascadă
         }
+
+
     }
-}
+    }
+

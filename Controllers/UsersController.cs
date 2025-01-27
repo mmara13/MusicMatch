@@ -171,7 +171,7 @@ namespace MusicMatch.Controllers
             }
         }
 
-       
+
 
         //public async Task<IActionResult> Edit(string id)
         //{
@@ -250,6 +250,37 @@ namespace MusicMatch.Controllers
         //{
         //    return _userManager.Users.Any(e => e.Id == id);
         //}
+
+
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ReportUser(string reportedUserId, string reason)
+        {
+            var reportingUserId = _userManager.GetUserId(User); // Get the ID of the current user
+
+            if (string.IsNullOrEmpty(reason))
+            {
+                TempData["ErrorMessage"] = "Please provide a reason for reporting the user.";
+                return RedirectToAction("Details", new { id = reportedUserId });
+            }
+
+            // Create a new report entry
+            var userReport = new UserReport
+            {
+                ReportedUserId = reportedUserId,
+                ReportedById = reportingUserId,
+                Reason = reason,
+                ReportedAt = DateTime.Now
+            };
+
+            // Add the report to the database
+            db.UserReports.Add(userReport);
+            await db.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "User reported successfully!";
+            return RedirectToAction("Details", new { id = reportedUserId });
+        }
 
     }
 }
