@@ -41,7 +41,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IMyEmailSender, EmailService>();
 builder.Services.AddSignalR();
+builder.Services.AddScoped<ReportService>();
 var app = builder.Build();
+
 
 
 app.MapHub<NotificationHub>("/notificationHub");
@@ -96,7 +98,7 @@ app.UseEndpoints(endpoints =>
 
 
 // Custom redirection logic for the root URL
-app.MapGet("/", async context =>
+/*app.MapGet("/", async context =>
 {
     if (context.User.Identity.IsAuthenticated)
     {
@@ -119,7 +121,7 @@ app.MapGet("/", async context =>
         // If user is not authenticated, redirect to the register page
         context.Response.Redirect("/Identity/Account/Register");
     }
-});
+});*/
 
 
 app.MapControllerRoute(

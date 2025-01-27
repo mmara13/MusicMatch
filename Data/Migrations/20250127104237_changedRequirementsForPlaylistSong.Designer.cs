@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MusicMatch.Data;
 
@@ -11,9 +12,11 @@ using MusicMatch.Data;
 namespace MusicMatch.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250127104237_changedRequirementsForPlaylistSong")]
+    partial class changedRequirementsForPlaylistSong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -773,42 +776,6 @@ namespace MusicMatch.Data.Migrations
                     b.ToTable("UserPreferencesSongs");
                 });
 
-            modelBuilder.Entity("MusicMatch.Models.UserReport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsResolved")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("ReportedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ReportedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ReportedUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReportedById");
-
-                    b.HasIndex("ReportedUserId");
-
-                    b.ToTable("UserReports");
-                });
-
             modelBuilder.Entity("MusicMatch.Models.UserSong", b =>
                 {
                     b.Property<int>("Id")
@@ -1247,25 +1214,6 @@ namespace MusicMatch.Data.Migrations
                     b.Navigation("Song");
 
                     b.Navigation("UserPreferencesForm");
-                });
-
-            modelBuilder.Entity("MusicMatch.Models.UserReport", b =>
-                {
-                    b.HasOne("MusicMatch.Models.ApplicationUser", "ReportedBy")
-                        .WithMany()
-                        .HasForeignKey("ReportedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MusicMatch.Models.ApplicationUser", "ReportedUser")
-                        .WithMany()
-                        .HasForeignKey("ReportedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ReportedBy");
-
-                    b.Navigation("ReportedUser");
                 });
 
             modelBuilder.Entity("MusicMatch.Models.UserSong", b =>

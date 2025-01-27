@@ -1,8 +1,51 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Feed";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<link rel="stylesheet" href="~/css/feed.css" asp-append-version="true" />
+<script src="~/js/feed.js"></script>
+
+
+<div class="container mt-2">
+    <div class="section mt-4">
+        <section class="playlist-section">
+            <h2 class="section-title text-white">Genre Playlists</h2>
+            <div class="scrolling-wrapper row flex-row flex-nowrap">
+                @foreach (var playlist in ViewBag.genrePlaylists)
+                {
+                    <div class="playlist-card">
+                        <a href="@Url.Action("Details", "Playlists", new { id = playlist.Id })">
+                            <img src="https://placehold.co/300x300?text=@playlist.Genre+Playlist" alt="@playlist.Name" />
+                        </a>
+                    </div>
+                }
+            </div>
+        </section>
+        <section class="playlist-section mt-4">
+            <h2 class="section-title text-white">Mood Playlists</h2>
+            <div class="scrolling-wrapper row flex-row flex-nowrap">
+                @foreach (var playlist in ViewBag.moodPlaylists)
+                {
+                    <div class="playlist-card">
+                        <a href="@Url.Action("Details", "Playlists", new { id = playlist.Id })">
+                            <img src="https://placehold.co/300x300?text=@playlist.Name" alt="@playlist.Name" />
+                        </a>
+                    </div>
+                }
+            </div>
+        </section>
+        <section class="playlist-section mt-4">
+            <h2 class="section-title text-white">Music Discovery</h2>
+            <div class="scrolling-wrapper row flex-row flex-nowrap">
+                @foreach (var song in ViewBag.discoverySongs)
+                {
+                    <div class="playlist-card">
+                        <a href="@Url.Action("Details", "Songs", new {id = song.Id })">
+                            <img src="@((song.Artist != null && song.Artist.PhotoUrl != null) ? song.Artist.PhotoUrl : $"https://placehold.co/300x300?text={@song.Title}")" alt="@song.Title" />
+                        </a>
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
 </div>

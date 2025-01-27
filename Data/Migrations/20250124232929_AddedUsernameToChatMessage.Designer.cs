@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MusicMatch.Data;
 
@@ -11,9 +12,11 @@ using MusicMatch.Data;
 namespace MusicMatch.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250124232929_AddedUsernameToChatMessage")]
+    partial class AddedUsernameToChatMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -350,6 +353,9 @@ namespace MusicMatch.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("EventId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -364,6 +370,8 @@ namespace MusicMatch.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EventId");
+
                     b.ToTable("ChatRooms");
                 });
 
@@ -376,9 +384,6 @@ namespace MusicMatch.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("ArtistId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ChatRoomId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateTime")
@@ -403,8 +408,6 @@ namespace MusicMatch.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ArtistId");
-
-                    b.HasIndex("ChatRoomId");
 
                     b.ToTable("Events");
                 });
@@ -567,6 +570,7 @@ namespace MusicMatch.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -771,42 +775,6 @@ namespace MusicMatch.Data.Migrations
                     b.HasIndex("SongId");
 
                     b.ToTable("UserPreferencesSongs");
-                });
-
-            modelBuilder.Entity("MusicMatch.Models.UserReport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsResolved")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("ReportedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ReportedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ReportedUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReportedById");
-
-                    b.HasIndex("ReportedUserId");
-
-                    b.ToTable("UserReports");
                 });
 
             modelBuilder.Entity("MusicMatch.Models.UserSong", b =>
@@ -1017,6 +985,13 @@ namespace MusicMatch.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MusicMatch.Models.ChatRoom", b =>
+                {
+                    b.HasOne("MusicMatch.Models.Event", null)
+                        .WithMany("ChatRooms")
+                        .HasForeignKey("EventId");
+                });
+
             modelBuilder.Entity("MusicMatch.Models.Event", b =>
                 {
                     b.HasOne("MusicMatch.Models.Artist", "Artist")
@@ -1024,13 +999,7 @@ namespace MusicMatch.Data.Migrations
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("MusicMatch.Models.ChatRoom", "ChatRoom")
-                        .WithMany()
-                        .HasForeignKey("ChatRoomId");
-
                     b.Navigation("Artist");
-
-                    b.Navigation("ChatRoom");
                 });
 
             modelBuilder.Entity("MusicMatch.Models.EventAttendee", b =>
@@ -1098,7 +1067,8 @@ namespace MusicMatch.Data.Migrations
                     b.HasOne("MusicMatch.Models.ApplicationUser", "User")
                         .WithMany("PlaylistSongs")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Playlist");
 
@@ -1249,25 +1219,6 @@ namespace MusicMatch.Data.Migrations
                     b.Navigation("UserPreferencesForm");
                 });
 
-            modelBuilder.Entity("MusicMatch.Models.UserReport", b =>
-                {
-                    b.HasOne("MusicMatch.Models.ApplicationUser", "ReportedBy")
-                        .WithMany()
-                        .HasForeignKey("ReportedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MusicMatch.Models.ApplicationUser", "ReportedUser")
-                        .WithMany()
-                        .HasForeignKey("ReportedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ReportedBy");
-
-                    b.Navigation("ReportedUser");
-                });
-
             modelBuilder.Entity("MusicMatch.Models.UserSong", b =>
                 {
                     b.HasOne("MusicMatch.Models.ApplicationUser", "ApplicationUser")
@@ -1376,6 +1327,8 @@ namespace MusicMatch.Data.Migrations
             modelBuilder.Entity("MusicMatch.Models.Event", b =>
                 {
                     b.Navigation("Attendees");
+
+                    b.Navigation("ChatRooms");
                 });
 
             modelBuilder.Entity("MusicMatch.Models.Genre", b =>

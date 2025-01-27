@@ -96,11 +96,24 @@
                             <td>
                                 <!-- Details Button -->
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm" style="background-color: #7b3beb; color: white;">Details</a>
+                                
+                                <!-- Chatroom Button -->
+                                @if (item.ChatRoom!=null)
+                                
+                                {
+                                    <a asp-controller ="ChatRoom" asp-action="EnterRoom" asp-route-id="@item.ChatRoom.Id" class="btn btn-primary">Chatroom</a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No Chatroom</span>
+                                }
+
                                 <!--Edit and Delete Admin-->
                                 @if (User.IsInRole("Admin"))
                                 {
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
                                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                                    
                                 }
                             </td>
                         </tr>
