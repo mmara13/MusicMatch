@@ -1,45 +1,54 @@
 ﻿@model IEnumerable<MusicMatch.Models.Song>
 
-<h2>Song List</h2>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-white">Song List</h1>
 
-<form asp-action="Index" method="get" class="form-inline mb-3">
-    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Search songs" />
-    <button type="submit" class="btn btn-primary ml-2">Search</button>
-</form>
+    <div class="mb-4">
+        <form asp-action="Index" method="get" class="flex mb-4">
+            <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control w-full px-3 py-2 rounded-l-lg" placeholder="Search songs">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-lg">Search</button>
+        </form>
 
-@if (User.IsInRole("Admin"))
-{
-    <a asp-action="Create" class="btn btn-success">Add New Song</a>
-}
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow">
+                Add New Song
+            </a>
+        }
+    </div>
 
-<table class="table text-light">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Artist</th>
-            <th>Genre</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach (var song in Model)
         {
-            <tr>
-                <td>@song.Title</td>
-                <td>@song.Artist?.Name</td>
-                <td>@song.Genre?.Name</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@song.Id" class="btn btn-info">Details</a>
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-white mb-2">@song.Title</h2>
+                    <p class="text-sm text-gray-400">@song.Artist?.Name</p>
+                    <p class="text-sm text-gray-400">@song.Genre?.Name</p>
 
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a asp-action="Edit" asp-route-id="@song.Id" class="btn btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@song.Id" class="btn btn-danger">Delete</a>
-                    }
+                    <div class="flex justify-between items-center mt-4">
+                        <a asp-action="Details" asp-route-id="@song.Id"
+                           class="text-blue-400 hover:text-blue-300">View Details</a>
 
-             
-                </td>
-            </tr>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="flex space-x-2">
+                                <a asp-action="Edit" asp-route-id="@song.Id"
+                                   class="text-green-400 hover:text-green-300">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@song.Id"
+                                   class="text-red-400 hover:text-red-300">Delete</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center text-gray-500 py-8">
+            <p>No songs found.</p>
+        </div>
+    }
+</div>

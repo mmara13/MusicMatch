@@ -1,70 +1,161 @@
 ﻿@model MusicMatch.Models.Playlist
 
-<div class="container mt-5">
-    <div class="card shadow-lg" style="background-color: #343a40; color: white;">
-        <div class="card-header bg-primary text-white">
-            <h2 class="text-center">Details for Playlist: <strong>@Model.Name</strong></h2>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Description:</strong> @Model.Description</p>
-                    <p><strong>Created By:</strong> @Model.User?.UserName</p>
-                    <p><strong>Created Date:</strong> @Model.CreatedDate?.ToString("f")</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Mood:</strong> @Model.Mood</p>
-                    <p><strong>Genre:</strong> @Model.Genre</p>
-                    <p>
-                        <strong>Visibility:</strong>
-                        <span class="badge @(Model.Visibility == "Public" ? "bg-success" : (Model.Visibility == "Private" ? "bg-danger" : "bg-warning"))">
-                            @Model.Visibility
-                        </span>
-                    </p>
-                    <p>
-                        <strong>Collaborative:</strong>
-                        <span class="badge @(Model.IsCollaborative ? "bg-info" : "bg-secondary")">
-                            @(Model.IsCollaborative ? "Yes" : "No")
-                        </span>
-                    </p>
-                </div>
+<div class="container mx-auto px-4 py-8">
+    <!-- Playlist Card -->
+    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden p-6">
+        <!-- Playlist Title -->
+        <h2 class="text-4xl font-bold text-white mb-6">Playlist: <strong>@Model.Name</strong></h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Section -->
+            <div>
+                <p class="text-gray-300 mb-4">
+                    <strong>Description:</strong>
+                    @if (string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <span>No description provided.</span>
+                    }
+                    else
+                    {
+                        <span>@Model.Description</span>
+                    }
+                </p>
+                <p class="text-gray-300 mb-4">
+                    <strong>Created By:</strong> @if (Model.User?.UserName != null)
+                    {
+                        @Model.User.UserName
+                    }
+                    else
+                    {
+                        <span>Unknown</span>
+                    }
+                </p>
+                <p class="text-gray-300 mb-4">
+                    <strong>Created Date:</strong>
+                    @if (Model.CreatedDate.HasValue)
+                    {
+                        @Model.CreatedDate.Value.ToString("f")
+                    }
+                    else
+                    {
+                        <span>Unknown</span>
+                    }
+                </p>
+            </div>
+
+            <!-- Right Section -->
+            <div>
+                <p class="text-gray-300 mb-4">
+                    <strong>Mood:</strong>
+                    @if (string.IsNullOrWhiteSpace(Model.Mood))
+                    {
+                        <span>No mood specified.</span>
+                    }
+                    else
+                    {
+                        <span>@Model.Mood</span>
+                    }
+                </p>
+                <p class="text-gray-300 mb-4">
+                    <strong>Genre:</strong>
+                    @if (string.IsNullOrWhiteSpace(Model.Genre))
+                    {
+                        <span>No genre specified.</span>
+                    }
+                    else
+                    {
+                        <span>@Model.Genre</span>
+                    }
+                </p>
+                <p class="text-gray-300 mb-4">
+                    <strong>Visibility:</strong>
+                    <span class="px-2 py-1 rounded-lg text-sm font-medium
+                        @(Model.Visibility == "Public" ? "bg-green-500 text-white" :
+                        (Model.Visibility == "Private" ? "bg-red-500 text-white" : "bg-yellow-500 text-gray-800"))">
+                        @Model.Visibility
+                    </span>
+                </p>
+                <p class="text-gray-300 mb-4">
+                    <strong>Collaborative:</strong>
+                    <span class="px-2 py-1 rounded-lg text-sm font-medium
+                        @(Model.IsCollaborative ? "bg-blue-500 text-white" : "bg-gray-600 text-white")">
+                        @(Model.IsCollaborative ? "Yes" : "No")
+                    </span>
+                </p>
             </div>
         </div>
     </div>
 
-    <div class="mt-4">
-        <h3 class="text-center text-white">Songs in Playlist</h3>
+    <!-- Songs Section -->
+    <div class="mt-8">
+        <h3 class="text-2xl font-semibold text-white mb-4">Songs in Playlist</h3>
+
         @if (Model.Songs != null && Model.Songs.Any())
         {
-            <table class="table table-hover text-white">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Title</th>
-                        <th>Artist</th>
-                        <th>Duration</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var playlistSong in Model.Songs)
-                    {
-                        <tr>
-                            <td>@playlistSong.Song?.Title</td>
-                            <td>@playlistSong.Song?.Artist?.Name</td>
-                            <td>@playlistSong.Song?.Duration</td>
+            <div class="overflow-x-auto bg-gray-800 rounded-lg shadow-lg p-4">
+                <table class="table-auto w-full text-gray-300">
+                    <thead>
+                        <tr class="bg-gray-700 text-gray-100">
+                            <th class="px-4 py-2 text-left">Title</th>
+                            <th class="px-4 py-2 text-left">Artist</th>
+                            <th class="px-4 py-2 text-left">Duration</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var playlistSong in Model.Songs)
+                        {
+                            <tr class="border-b border-gray-700">
+                                <td class="px-4 py-2">
+                                    @if (playlistSong.Song != null && !string.IsNullOrEmpty(playlistSong.Song.Title))
+                                    {
+                                        @playlistSong.Song.Title
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500">Unknown Title</span>
+                                    }
+                                </td>
+                                <td class="px-4 py-2">
+                                    @if (playlistSong.Song?.Artist != null && !string.IsNullOrEmpty(playlistSong.Song.Artist.Name))
+                                    {
+                                        @playlistSong.Song.Artist.Name
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500">Unknown Artist</span>
+                                    }
+                                </td>
+
+                                <td class="px-4 py-2">
+                                    @if (playlistSong.Song != null && playlistSong.Song.Duration != null)
+                                    {
+                                        @playlistSong.Song.Duration
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500">Unknown Duration</span>
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
         else
         {
-            <div class="alert alert-warning text-center">
-                No songs in this playlist yet. Start adding some hits!
+            <div class="text-center text-gray-400 bg-gray-800 rounded-lg shadow-lg p-6">
+                <p>No songs in this playlist yet. Start adding some hits!</p>
             </div>
         }
     </div>
 
-    <div class="text-center mt-4">
-        <a asp-action="Index" class="btn btn-secondary">Back to Playlists</a>
+
+    <!-- Action Buttons -->
+    <div class="text-center mt-8">
+        <a asp-action="Index" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg shadow">
+            Back to Playlists
+        </a>
     </div>
 </div>

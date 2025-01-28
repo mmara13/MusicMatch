@@ -42,10 +42,11 @@ namespace MusicMatch.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var playlist = await _context.Playlists
-                .Include(p => p.Songs)
-                    .ThenInclude(ps => ps.Song)
-                .Include(p => p.User)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                                .Include(p => p.Songs)
+                .ThenInclude(ps => ps.Song)
+            .ThenInclude(s => s.Artist) // Make sure the Artist is included
+                 .FirstOrDefaultAsync(p => p.Id == id);
+
 
             if (playlist == null)
             {
