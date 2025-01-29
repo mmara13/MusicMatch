@@ -232,6 +232,30 @@ namespace MusicMatch.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize]
+        public async Task<IActionResult> SelectPlaylistForSong(int songId)
+        {
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "You must be logged in to add a song to a playlist.";
+                return RedirectToAction("Details", new { id = songId });
+            }
+            var playlists = await _context.Playlists
+                .Where(p => p.UserId == user.Id)
+                .ToListAsync();
+            if (!playlists.Any())
+            {
+                TempData["ErrorMessage"] = "You don't have any playlists yet. Please create one first.";
+                return RedirectToAction("Details", new { id = songId });
+            }
+            ViewData["SongId"] = songId;
+            return View(playlists);
+        }
+
+
+
         private void PopulateViewData()
         {
             ViewBag.Artists = _context.Artists.ToList();

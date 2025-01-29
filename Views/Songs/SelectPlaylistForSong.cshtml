@@ -1,34 +1,34 @@
 ﻿@model IEnumerable<MusicMatch.Models.Playlist>
-
 @{
     ViewData["Title"] = "Select Playlist";
     int songId = (int)ViewData["SongId"];
 }
 
-<h2>Select a Playlist</h2>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-gray-800 text-white rounded-lg shadow-lg p-6">
+        <h2 class="text-3xl font-bold text-center mb-6">Select a Playlist</h2>
 
-<table class="table text-light">
-    <thead>
-        <tr>
-            <th>Playlist Name</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var playlist in Model)
-        {
-            <tr>
-                <td>@playlist.Name</td>
-                <td>
-                    <form asp-controller="Playlists" asp-action="AddSongToPlaylist" method="post">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var playlist in Model)
+            {
+                <div class="bg-gray-700 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    <h3 class="text-xl font-semibold text-white">@playlist.Name</h3>
+                    <form asp-controller="Playlists" asp-action="AddSongToPlaylist" method="post" class="mt-4">
                         <input type="hidden" name="songId" value="@songId" />
                         <input type="hidden" name="playlistId" value="@playlist.Id" />
-                        <button type="submit" class="btn btn-success">Add to Playlist</button>
+                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition">
+                            Add to Playlist
+                        </button>
                     </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                </div>
+            }
+        </div>
 
-<a asp-controller="Songs" asp-action="Details" asp-route-id="@songId" class="btn btn-secondary">Back to Song</a>
+        <div class="text-center mt-6">
+            <a asp-controller="Songs" asp-action="Details" asp-route-id="@songId"
+               class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition">
+                ⬅ Back to Song
+            </a>
+        </div>
+    </div>
+</div>
