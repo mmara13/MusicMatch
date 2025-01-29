@@ -1,80 +1,176 @@
-﻿@model MusicMatch.Models.Artist
+﻿@using MusicMatch.Data
+@model MusicMatch.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Profile Details";
+    var preferences = ViewBag.UserPreferences as UserPreferencesForm;
+    var pastEvents = ViewBag.PastEvents as List<MusicMatch.Models.Event>;
+    var publicPlaylists = ViewBag.PublicPlaylists as List<MusicMatch.Models.Playlist>;
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
 
 <div class="container mx-auto px-4 py-8">
     <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-wrap md:flex-nowrap">
-        <!-- Left Section: Artist Photo -->
+        <!-- Left Section: Profile Photo -->
         <div class="flex-shrink-0 p-6 flex items-center justify-center">
-            @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
-            {
-                <img src="@Model.PhotoUrl" 
-                     class="w-40 h-40 object-cover rounded-full border-4 border-gray-700 shadow-md">
-            }
-            else
-            {
-                <div class="w-40 h-40 bg-gray-700 flex items-center justify-center rounded-full border-4 border-gray-600 shadow-md">
-                    <span class="text-xl text-gray-400">No Image</span>
-                </div>
-            }
+            <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-gray-700 shadow-md">
+                @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+                {
+                    <img src="@Model.PhotoUrl" alt="Profile Photo" class="w-full h-full object-cover" />
+                }
+                else
+                {
+                    <div class="w-full h-full bg-gray-700 flex items-center justify-center">
+                        <svg class="w-20 h-20 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-6.627 0-12 3.373-12 7.5 0 .524.168 1.057.431 1.5h23.138c.263-.443.431-.976.431-1.5 0-4.127-5.373-7.5-12-7.5z" />
+                        </svg>
+                    </div>
+                }
+            </div>
         </div>
 
-        <!-- Right Section: Artist Information -->
+        <!-- Right Section: Profile Information -->
         <div class="flex-grow p-6">
-            <h2 class="text-4xl font-bold text-white mb-4">@Model.Name</h2>
+            <div class="mb-4">
+                <h6 class="text-sm font-medium text-gray-400">Profile</h6>
+                <h1 class="text-4xl font-bold text-white">@Model.FirstName @Model.LastName</h1>
+            </div>
 
-            <!-- Biography -->
-            <p class="text-gray-300 mb-4">
-                <strong>Biography:</strong> @(string.IsNullOrWhiteSpace(Model.Bio) ? "No biography provided." : Model.Bio)
-            </p>
-
-            <!-- Number of Songs -->
-            <p class="text-gray-300 mb-4">
-                <strong>Number of Songs:</strong> @(Model.Songs?.Count ?? 0)
-            </p>
-
-
-            <!-- Songs List -->
-            @if (Model.Songs != null && Model.Songs.Any())
+            @if (ViewBag.IsOwnProfile)
             {
-                <div>
-                    <h3 class="text-xl font-semibold text-white mb-2">Songs:</h3>
-                    <ul class="list-disc list-inside text-gray-300">
-                        @foreach (var song in Model.Songs)
-                        {
-                            <li>@song.Title</li>
-                        }
-                    </ul>
+                <div class="flex items-center gap-6 text-sm text-gray-300 mb-4">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span>@Model.Email</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                    {
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <span>@Model.PhoneNumber</span>
+                        </div>
+                    }
                 </div>
             }
-            else
-            {
-                <p class="text-gray-400">No songs available for this artist.</p>
-            }
 
-            <!-- Action Buttons -->
             <div class="mt-6 flex flex-wrap gap-2">
-                <a asp-controller="Home" asp-action="Index" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow">
-                    Back to Home
-                </a>
-
-                @if (User.IsInRole("Admin"))
+                @if (ViewBag.IsOwnProfile)
                 {
-                    <a asp-action="Index" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow">
-                        Back to List
-                    </a>
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="bg-yellow-500 hover:bg-yellow-400 text-white px-4 py-2 rounded-lg shadow">
-                        Edit
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@Model.Id" class="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-lg shadow">
-                        Delete
+                    <a href="@Url.Action("Edit", "Profiles")"
+                       class="bg-yellow-500 hover:bg-yellow-400 text-white px-4 py-2 rounded-lg shadow">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                        Edit Profile
                     </a>
                 }
-
-                <form asp-action="AddToFavorites" asp-route-artistId="@Model.Id" method="post" class="d-inline">
-                    <button type="submit" class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded-lg shadow">
-                        Add to Favorites
-                    </button>
-                </form>
+                <a href="@Url.Action("Index", "Home")" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow">
+                    Back to Home
+                </a>
             </div>
         </div>
     </div>
+
+    <!-- Music Preferences Section -->
+    @if (preferences != null)
+    {
+        <div class="mt-8 space-y-8">
+            @if (preferences.UserPreferencesArtists?.Any() == true)
+            {
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h2 class="text-2xl font-bold text-white mb-4">Favorite Artists</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        @foreach (var artistPref in preferences.UserPreferencesArtists)
+                        {
+                            <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors">
+                                <h3 class="font-medium text-white">@artistPref.Artist.Name</h3>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (preferences.UserPreferencesSongs?.Any() == true)
+            {
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h2 class="text-2xl font-bold text-white mb-4">Favorite Songs</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        @foreach (var songPref in preferences.UserPreferencesSongs)
+                        {
+                            <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors">
+                                <h3 class="font-medium text-white">@songPref.Song.Title</h3>
+                                <p class="text-sm text-gray-400">@songPref.Song.Artist?.Name</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Public Playlists Section -->
+    @if (publicPlaylists?.Any() == true)
+    {
+        <div class="mt-8 bg-gray-800 rounded-lg p-6">
+            <h2 class="text-2xl font-bold text-white mb-4">Public Playlists</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                @foreach (var playlist in publicPlaylists)
+                {
+                    <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors">
+                        <h3 class="font-medium text-white">@playlist.Name</h3>
+                        <p class="text-sm text-gray-400">@playlist.Description</p>
+                        <a asp-controller="Playlists" asp-action="Details" asp-route-id="@playlist.Id" 
+                           class="text-purple-400 hover:text-purple-600 transition-colors">View Playlist</a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Events History Section -->
+    @if (pastEvents?.Any() == true)
+    {
+        <div class="mt-8 bg-gray-800 rounded-lg p-6">
+            <h2 class="text-2xl font-bold text-white mb-4">Events attendance history</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @foreach (var ev in pastEvents)
+                {
+                    <div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors">
+                        <h3 class="text-lg font-medium text-white">@ev.Name</h3>
+                        <p class="text-sm text-gray-400"><strong>Date:</strong> @ev.DateTime.ToString("g")</p>
+                        <a asp-controller="Events" asp-action="Details" asp-route-id="@ev.Id" 
+                           class="text-purple-400 hover:text-purple-600 transition-colors">View Details</a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="mt-8 bg-gray-800 rounded-lg p-6">
+            <h2 class="text-2xl font-bold text-white mb-4">Events attendance history</h2>
+            <p class="text-gray-400">No past events found.</p>
+        </div>
+    }
 </div>
+
+<script>
+    document.getElementById("reportButton")?.addEventListener("click", function() {
+        var reportForm = document.getElementById("reportForm");
+        if (reportForm.style.display === "none") {
+            reportForm.style.display = "block";
+        } else {
+            reportForm.style.display = "none";
+        }
+    });
+</script>

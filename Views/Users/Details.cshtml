@@ -1,65 +1,102 @@
 ﻿@model MusicMatch.Models.ApplicationUser
 
-<h2>@Model.FirstName @Model.LastName's Profile</h2>
-@if (!string.IsNullOrEmpty(Model.PhotoUrl))
-{
-    <img src="@Model.PhotoUrl" alt="Profile Photo" class="img-thumbnail" width="150" />
-}
-else
-{
-    <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp" alt="Default Profile Photo" class="img-thumbnail" width="150" />
-}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-wrap md:flex-nowrap">
+        <!-- Left Section: Profile Photo -->
+        <div class="flex-shrink-0 p-6 flex items-center justify-center">
+            @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+            {
+                <img src="@Model.PhotoUrl" alt="Profile Photo" class="w-40 h-40 object-cover rounded-full border-4 border-gray-700 shadow-md" />
+            }
+            else
+            {
+                <div class="w-40 h-40 bg-gray-700 flex items-center justify-center rounded-full border-4 border-gray-600 shadow-md">
+                    <svg class="w-20 h-20 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-6.627 0-12 3.373-12 7.5 0 .524.168 1.057.431 1.5h23.138c.263-.443.431-.976.431-1.5 0-4.127-5.373-7.5-12-7.5z" />
+                    </svg>
+                </div>
+            }
+        </div>
 
+        <!-- Right Section: Profile Information -->
+        <div class="flex-grow p-6">
+            <h2 class="text-4xl font-bold text-white mb-4">@Model.FirstName @Model.LastName</h2>
 
+            @if (Model.FavoriteGenres?.Any() == true)
+            {
+                <div class="mb-4">
+                    <h3 class="text-xl font-semibold text-white mb-2">Favorite Genres</h3>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (var genre in Model.FavoriteGenres)
+                        {
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full">
+                                @(genre.Genre?.Name ?? "Unknown Genre")
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
 
-<h3>Favorite Genres</h3>
-<ul>
-    @foreach (var genre in Model.FavoriteGenres)
-    {
-        <li>@genre.Genre?.Name</li>
-    }
-</ul>
+            @if (Model.FavoriteArtists?.Any() == true)
+            {
+                <div class="mb-4">
+                    <h3 class="text-xl font-semibold text-white mb-2">Favorite Artists</h3>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (var artist in Model.FavoriteArtists)
+                        {
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full">
+                                @(artist.Artist?.Name ?? "Unknown Artist")
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
 
-<h3>Favorite Artists</h3>
-<ul>
-    @foreach (var artist in Model.FavoriteArtists)
-    {
-        <li>@artist.Artist?.Name</li>
-    }
-</ul>
+            @if (Model.RecentActivities?.Any() == true)
+            {
+                <div class="mt-6">
+                    <h3 class="text-xl font-semibold text-white mb-2">Recent Activities</h3>
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <ul class="space-y-2">
+                            @foreach (var activity in Model.RecentActivities.OrderByDescending(a => a.Timestamp).Take(10))
+                            {
+                                <li class="text-gray-300">
+                                    <span class="text-purple-400">@activity.ActivityType</span> - @activity.ActivityDetails
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
 
-<h3>Recent Activities</h3>
-<ul>
-    @foreach (var activity in Model.RecentActivities.OrderByDescending(a => a.Timestamp).Take(10))
-    {
-        <li>@activity.ActivityType - @activity.ActivityDetails</li>
-    }
-</ul>
+            <!-- Action Buttons -->
+            <div class="mt-6 flex flex-wrap gap-2">
+                <a asp-action="Index" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow">
+                    Back to Users
+                </a>
+                <button type="button" id="reportButton" class="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-lg shadow">
+                    Report User
+                </button>
+            </div>
 
-<a asp-action="Index" class="btn btn-secondary">Back to Users</a>
-
-<!-- Button to trigger report -->
-<form method="post" action="@Url.Action("ReportUser", "Users")" id="reportForm" style="display:none;">
-    <input type="hidden" name="ReportedUserId" value="@Model.Id" />
-    <div class="form-group">
-        <label for="reason">Reason for reporting:</label>
-        <textarea name="Reason" id="reason" class="form-control" rows="3" required></textarea>
+            <!-- Report Form -->
+            <form method="post" action="@Url.Action("ReportUser", "Users")" id="reportForm" class="mt-4 hidden">
+                <input type="hidden" name="ReportedUserId" value="@Model.Id" />
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <label for="reason" class="block text-white mb-2">Reason for reporting:</label>
+                    <textarea name="Reason" id="reason" class="w-full bg-gray-600 text-white rounded-lg p-2" rows="3" required></textarea>
+                    <button type="submit" class="mt-2 bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-lg shadow">
+                        Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary">Submit Report</button>
-</form>
-
-<!-- Button to trigger report -->
-<button type="button" id="reportButton" class="btn btn-danger">Report User</button>
+</div>
 
 <script>
-    document.getElementById("reportButton").onclick = function() {
-        var reportForm = document.getElementById("reportForm");
-
-        // Toggle visibility of the report form
-        if (reportForm.style.display === "none") {
-            reportForm.style.display = "block";
-        } else {
-            reportForm.style.display = "none";
-        }
-    };
+    document.getElementById("reportButton")?.addEventListener("click", function() {
+        const reportForm = document.getElementById("reportForm");
+        reportForm.classList.toggle("hidden");
+    });
 </script>

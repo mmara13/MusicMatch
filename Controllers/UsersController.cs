@@ -43,6 +43,8 @@ namespace MusicMatch.Controllers
             return View(users); // Use a view that expects List<ApplicationUser>
         }
         [Authorize(Roles = "Admin")]
+
+        [Authorize]
         public async Task<IActionResult> Details(string id)
         {
             if (string.IsNullOrEmpty(id)) return NotFound();

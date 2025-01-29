@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace MusicMatch.Controllers
 {
+    [Authorize]
     public class ProfilesController : Controller
     {
         private readonly ApplicationDbContext db;
@@ -65,6 +66,7 @@ namespace MusicMatch.Controllers
 
         //    return View(user);
         //}
+        [Authorize]
         public async Task<IActionResult> Details(string id)
         {
             if (string.IsNullOrEmpty(id))

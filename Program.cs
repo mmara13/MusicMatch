@@ -24,6 +24,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
+
+
 //builder.Services.AddIdentityCore<ApplicationUser>()
 //                .AddUserManager<UserManager<ApplicationUser>>();
 
