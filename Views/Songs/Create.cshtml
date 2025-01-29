@@ -6,12 +6,14 @@
     <div>
         <label for="Title">Title</label>
         <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
     </div>
     <div>
         <label for="ArtistId">Artist</label>
         <select asp-for="ArtistId" asp-items="@(new SelectList(ViewBag.Artists, "Id", "Name"))" class="form-control">
             <option value="">-- Select an Artist --</option>
         </select>
+        <span asp-validation-for="ArtistId" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label for="GenreId">Genre</label>
@@ -21,7 +23,9 @@
     </div>
     <div>
         <label for="Mood">Mood</label>
-        <select asp-for="Mood" asp-items="@(new SelectList(ViewBag.Moods))" class="form-control"></select>
+        <select asp-for="Mood" asp-items="@(new SelectList(ViewBag.Moods))" class="form-control">
+            <option value="">-- Select a Mood --</option>
+        </select>
     </div>
     <div>
         <label for="Duration">Duration</label>

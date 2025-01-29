@@ -1,0 +1,72 @@
+﻿/* General container styling */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+h1, h2 {
+    font-family: Arial, sans-serif;
+    color: #fff;
+}
+
+/* Scrolling wrapper */
+.scrolling-wrapper {
+    display: flex;
+    overflow-x: auto; /* Enables horizontal scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
+    padding-bottom: 10px;
+}
+
+    .scrolling-wrapper::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .scrolling-wrapper::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+
+    .scrolling-wrapper::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+/* Playlist card styling */
+.playlist-card {
+    flex: 0 0 auto;
+    width: 200px; /* Square width */
+    margin: 10px;
+    text-align: center;
+    color: #fff;
+}
+
+    .playlist-card img {
+        width: 200px; 
+        height: 200px; 
+        object-fit: cover; 
+        border-radius: 8px; /* Rounded corners for the card image */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Slight shadow for depth */
+        transition: transform 0.3s, filter 0.3s;
+    }
+
+        .playlist-card img:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+
+    .playlist-card h3 {
+        font-size: 1em;
+        margin-top: 10px;
+        font-family: Arial, sans-serif;
+    }
+
+/* Adjustments for responsiveness */
+@media (max-width: 768px) {
+    .playlist-card {
+        width: 160px;
+    }
+
+        .playlist-card img {
+            width: 160px;
+            height: 160px;
+        }
+}

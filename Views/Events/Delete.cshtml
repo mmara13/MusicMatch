@@ -1,0 +1,11 @@
+﻿@model MusicMatch.Models.Event
+
+<h2 style="font-weight: bold;">Delete Event</h2>
+
+<p>Are you sure you want to delete the event <strong>@Model.Name</strong> scheduled on <strong>@Model.DateTime.ToString("dd MMMM yyyy")</strong> at <strong>@Model.Location</strong>?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,36 +1,58 @@
 ﻿@model MusicMatch.Models.Song
 
-<h2>@Model.Title</h2>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div class="p-6">
+            <h1 class="text-4xl font-bold text-white mb-4">@Model.Title</h1>
 
-<div>
-    <strong>Artist:</strong> @Model.Artist?.Name
-</div>
-<div>
-    <strong>Genre:</strong> @Model.Genre?.Name
-</div>
-<div>
-    <strong>Mood:</strong> @Model.Mood
-</div>
-<div>
-    <strong>Duration:</strong> @Model.Duration
-</div>
-<div>
-    <strong>Release Date:</strong>
-    @(Model.ReleaseDate.HasValue
-        ? Model.ReleaseDate.Value.ToString("d")
-        : "Unknown")
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+                <div>
+                    <p><strong>Artist:</strong> @Model.Artist?.Name</p>
+                    <p><strong>Genre:</strong> @(string.IsNullOrEmpty(Model.Genre?.Name) ? "Unknown" : Model.Genre.Name)</p>
+                    <p><strong>Mood:</strong> @Model.Mood</p>
+                </div>
+                <div>
+                    <p><strong>Duration:</strong> @Model.Duration</p>
+                    <p>
+                        <strong>Release Date:</strong>
+                        @(Model.ReleaseDate.HasValue
+                            ? Model.ReleaseDate.Value.ToString("d")
+                            : "Unknown")
+                    </p>
+                </div>
+            </div>
 
+            <div class="mt-6">
+                <form asp-action="AddToFavorites" asp-route-songId="@Model.Id" method="post" class="inline-block">
+                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow">
+                        Add to Favorites
+                    </button>
+                </form>
+
+                <form action="/Songs/SelectPlaylistForSong" method="get" class="inline-block ml-2">
+                    <input type="hidden" name="songId" value="@Model.Id" />
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
+                        Add to Playlist
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="bg-gray-900 p-4 flex justify-between items-center">
+            <a asp-controller="Home" asp-action="Index" class="text-gray-400 hover:text-gray-300">
+                Back to Home
+            </a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="flex space-x-4">
+                    <a asp-action="Index" class="text-gray-400 hover:text-gray-300">Back to List</a>
+                    <a asp-action="Edit" asp-route-id="@Model.Id"
+                       class="text-yellow-400 hover:text-yellow-300">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id"
+                       class="text-red-400 hover:text-red-300">Delete</a>
+                </div>
+            }
+        </div>
+    </div>
 </div>
-
-<a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
-
-
-@if (User.IsInRole("Admin"))
-{
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
-}
-<form asp-action="AddToFavorites" asp-route-songId="@Model.Id" method="post" class="d-inline">
-    <button type="submit" class="btn btn-success">Add to Favorites</button>
-</form>

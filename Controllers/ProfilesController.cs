@@ -69,7 +69,6 @@ namespace MusicMatch.Controllers
         {
             if (string.IsNullOrEmpty(id))
             {
-                // If no ID is provided and user is logged in, redirect to their profile
                 if (User.Identity.IsAuthenticated)
                 {
                     var currentUser = await _userManager.GetUserAsync(User);
@@ -78,8 +77,10 @@ namespace MusicMatch.Controllers
                 return NotFound();
             }
 
-            // Get user
             var user = await _userManager.Users
+                .Include(u => u.EventAttendances)
+                    .ThenInclude(ea => ea.Event)
+                    .ThenInclude(e => e.Artist)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
@@ -87,7 +88,6 @@ namespace MusicMatch.Controllers
                 return NotFound();
             }
 
-            // Set ViewBag.IsOwnProfile
             ViewBag.IsOwnProfile = false;
             if (User.Identity.IsAuthenticated)
             {
@@ -95,7 +95,6 @@ namespace MusicMatch.Controllers
                 ViewBag.IsOwnProfile = currentUser.Id == user.Id;
             }
 
-            // Load preferences data
             var preferences = await db.UserPreferencesForms
                 .Include(upf => upf.UserPreferencesSongs)
                     .ThenInclude(ups => ups.Song)
@@ -106,8 +105,23 @@ namespace MusicMatch.Controllers
 
             ViewBag.UserPreferences = preferences;
 
+            var pastEvents = user.EventAttendances
+                .Where(ea => ea.RSVP_Status == "Going" && ea.Event.DateTime < DateTime.UtcNow)
+                .Select(ea => ea.Event)
+                .ToList();
+
+            ViewBag.PastEvents = pastEvents;
+
+            // Fetch public playlists created by the user
+            var publicPlaylists = await db.Playlists
+                .Where(p => p.UserId == id && p.Visibility == "Public")
+                .ToListAsync();
+
+            ViewBag.PublicPlaylists = publicPlaylists;
+
             return View(user);
         }
+
 
 
         [Authorize]

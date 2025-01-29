@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
 using MusicMatch.Models;
-using MusicMatch.Services;
 using System.Text.RegularExpressions;
 
 namespace MusicMatch.Controllers
@@ -16,13 +15,11 @@ namespace MusicMatch.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly NotificationService _notificationService;
 
         public SongsController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            NotificationService notificationService
+            RoleManager<IdentityRole> roleManager
             )
         {
             _context = context;
@@ -30,7 +27,6 @@ namespace MusicMatch.Controllers
             _userManager = userManager;
 
             _roleManager = roleManager;
-            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index(string searchString)
@@ -111,7 +107,6 @@ namespace MusicMatch.Controllers
 
             _context.Add(song);
             await _context.SaveChangesAsync();
-            await _notificationService.NotifyNewSong(song.Id);
             TempData["SuccessMessage"] = "Song added successfully!";
             return RedirectToAction(nameof(Index));
         }
@@ -236,6 +231,30 @@ namespace MusicMatch.Controllers
             TempData["SuccessMessage"] = "Song deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize]
+        public async Task<IActionResult> SelectPlaylistForSong(int songId)
+        {
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "You must be logged in to add a song to a playlist.";
+                return RedirectToAction("Details", new { id = songId });
+            }
+            var playlists = await _context.Playlists
+                .Where(p => p.UserId == user.Id)
+                .ToListAsync();
+            if (!playlists.Any())
+            {
+                TempData["ErrorMessage"] = "You don't have any playlists yet. Please create one first.";
+                return RedirectToAction("Details", new { id = songId });
+            }
+            ViewData["SongId"] = songId;
+            return View(playlists);
+        }
+
+
 
         private void PopulateViewData()
         {

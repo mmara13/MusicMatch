@@ -23,6 +23,6 @@ namespace MusicMatch.Models
         public virtual Artist? Artist { get; set; }
 
         public virtual ICollection<EventAttendee>? Attendees { get; set; }
-        public virtual ICollection<ChatRoom>? ChatRooms { get; set; }
+        public virtual ChatRoom? ChatRoom { get; set; }
     }
 }

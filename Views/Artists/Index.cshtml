@@ -1,4 +1,4 @@
-﻿@model List<Artist>
+@model List<Artist>
 @{
     ViewData["Title"] = "Manage Artists";
     var notifications = ViewBag.Notifications as List<Notification> ?? new List<Notification>();
@@ -8,10 +8,17 @@
     <h1 class="text-3xl font-bold mb-6 text-white">Manage Artists</h1>
 
     <div class="mb-4">
-        <form asp-action="Index" method="get" class="flex">
+        <form asp-action="Index" method="get" class="flex mb-4">
             <input type="text" name="searchString" class="form-control w-full px-3 py-2 rounded-l-lg" placeholder="Search artists...">
             <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-lg">Search</button>
         </form>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow">
+                Add New Artist
+            </a>
+        }
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -44,7 +51,6 @@
         </div>
     }
 
-    @* Notifications Partial *@
     @if (notifications.Any())
     {
         <div class="mt-8 bg-gray-800 rounded-lg shadow-lg p-6">
@@ -53,8 +59,3 @@
         </div>
     }
 </div>
-
-@if (User.IsInRole("Admin"))
-{
-    <a asp-action="Create" class="btn btn-success">Add New Song</a>
-}

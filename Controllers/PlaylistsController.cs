@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicMatch.Data;
@@ -28,7 +29,6 @@ namespace MusicMatch.Controllers
             _roleManager = roleManager;
         }
 
-        // GET: Playlists
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
@@ -39,7 +39,23 @@ namespace MusicMatch.Controllers
             return View(playlists);
         }
 
-        // GET: Playlists/Create
+        public async Task<IActionResult> Details(int id)
+        {
+            var playlist = await _context.Playlists
+                                .Include(p => p.Songs)
+                .ThenInclude(ps => ps.Song)
+            .ThenInclude(s => s.Artist) // Make sure the Artist is included
+                 .FirstOrDefaultAsync(p => p.Id == id);
+
+
+            if (playlist == null)
+            {
+                return NotFound();
+            }
+
+            return View(playlist);
+        }
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -70,8 +86,6 @@ namespace MusicMatch.Controllers
             }
         }
 
-
-        // GET: Playlists/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -87,7 +101,6 @@ namespace MusicMatch.Controllers
             return View(playlist);
         }
 
-        // POST: Playlists/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,IsCollaborative,Visibility")] Playlist playlist)
@@ -120,7 +133,6 @@ namespace MusicMatch.Controllers
             return View(playlist);
         }
 
-        // GET: Playlists/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -138,7 +150,6 @@ namespace MusicMatch.Controllers
             return View(playlist);
         }
 
-        // POST: Playlists/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -151,6 +162,89 @@ namespace MusicMatch.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddSongToPlaylist(int songId, int playlistId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "You must be logged in to perform this action.";
+                return RedirectToAction("Index", "Home");
+            }
+            var playlist = await _context.Playlists.FindAsync(playlistId);
+            if (playlist == null || playlist.UserId != user.Id)
+            {
+                TempData["ErrorMessage"] = "Playlist not found or you don't have access to it.";
+                return RedirectToAction("Index", "Home");
+            }
+            var song = await _context.Songs.FindAsync(songId);
+            if (song == null)
+            {
+                TempData["ErrorMessage"] = "Song not found.";
+                return RedirectToAction("Index", "Home");
+            }
+            var existingEntry = await _context.PlaylistSongs
+                .FirstOrDefaultAsync(ps => ps.PlaylistId == playlistId && ps.SongId == songId);
+            if (existingEntry != null)
+            {
+                TempData["ErrorMessage"] = "This song is already in the selected playlist.";
+                return RedirectToAction("Details", "Songs", new { id = songId });
+            }
+            var playlistSong = new PlaylistSong
+            {
+                PlaylistId = playlistId,
+                SongId = songId,
+                UserId = user.Id,
+                AddedAt = DateTime.Now
+            };
+            _context.PlaylistSongs.Add(playlistSong);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Song '{song.Title}' added to playlist '{playlist.Name}'!";
+            return RedirectToAction("Details", "Songs", new { id = songId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveSongFromPlaylist(int songId, int playlistId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "You must be logged in to perform this action.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var playlist = await _context.Playlists
+                .Include(p => p.Songs)
+                .FirstOrDefaultAsync(p => p.Id == playlistId && p.UserId == user.Id);
+
+            if (playlist == null)
+            {
+                TempData["ErrorMessage"] = "Playlist not found or you don't have permission to edit it.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var playlistSong = await _context.PlaylistSongs
+                .FirstOrDefaultAsync(ps => ps.PlaylistId == playlistId && ps.SongId == songId);
+
+            if (playlistSong != null)
+            {
+                _context.PlaylistSongs.Remove(playlistSong);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Song removed!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Song not found in this playlist.";
+            }
+
+            return RedirectToAction("Details", new { id = playlistId });
+        }
+
 
         private bool PlaylistExists(int id)
         {

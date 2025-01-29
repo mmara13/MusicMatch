@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Profile Details";
     var preferences = ViewBag.UserPreferences as UserPreferencesForm;
+    var pastEvents = ViewBag.PastEvents as List<MusicMatch.Models.Event>;
 }
 
 @if (TempData["Message"] != null)
@@ -76,19 +77,12 @@
                                 </svg>
                                 Edit Profile
                             </a>
-                            <a href="@Url.Action("EditPreferences", "Profiles")"
-                               class="inline-flex items-center px-6 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full font-medium transition-colors">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                Edit Preferences
-                            </a>
                         }
                     </div>
                 </div>
             </div>
         </div>
+
 
         <!-- Music Preferences Section -->
         @if (preferences != null)
@@ -124,27 +118,78 @@
                         </div>
                     </div>
                 }
-
-                @* @if (!string.IsNullOrEmpty(preferences.PreferredGenres))
-                {
-                    <div>
-                        <h2 class="text-2xl font-bold mb-4">Preferred Genres</h2>
-                        <div class="bg-gray-800 rounded-lg p-4">
-                            <p>@preferences.PreferredGenres</p>
-                        </div>
-                    </div>
-                } *@
-
-                @* @if (!string.IsNullOrEmpty(preferences.MusicBackground))
-                {
-                    <div>
-                        <h2 class="text-2xl font-bold mb-4">Music Background</h2>
-                        <div class="bg-gray-800 rounded-lg p-4">
-                            <p>@preferences.MusicBackground</p>
-                        </div>
-                    </div>
-                } *@
             </div>
         }
+
+        <!-- Public Playlists Section -->
+        @{
+            var publicPlaylists = ViewBag.PublicPlaylists as List<MusicMatch.Models.Playlist>;
+        }
+
+        @if (publicPlaylists != null && publicPlaylists.Any())
+        {
+            <div class="mt-12 space-y-8">
+                <h2 class="text-2xl font-bold mb-4">Public Playlists</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    @foreach (var playlist in publicPlaylists)
+                    {
+                        <div class="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition-colors">
+                            <h3 class="font-medium">@playlist.Name</h3>
+                            <p class="text-sm text-gray-400">@playlist.Description</p>
+                            <a asp-controller="Playlists" asp-action="Details" asp-route-id="@playlist.Id" class="text-purple-400 hover:text-purple-600 transition-colors">View Playlist</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+
+
+        <!-- History of Events Section -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Events attendance history</h2>
+
+            @if (pastEvents == null || !pastEvents.Any())
+            {
+                <p class="text-gray-400">You have not attended any past events.</p>
+            }
+            else
+            {
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach (var ev in pastEvents)
+                    {
+                        <div class="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition-colors">
+                            <h3 class="text-lg font-medium">@ev.Name</h3>
+                            <p class="text-sm text-gray-400"><strong>Date:</strong> @ev.DateTime.ToString("g")</p>
+                           @*<p><strong>Location:</strong> @ev.Location</p>
+                            <p><strong>Type:</strong> @ev.Type</p>
+                            @if (ev.Artist != null)
+                            {
+                                <p><strong>Artist:</strong> @ev.Artist.Name</p>
+                            }
+                            *@
+                            <a asp-controller="Events" asp-action="Details" asp-route-id="@ev.Id" class="text-purple-400 hover:text-purple-600 transition-colors">View Details</a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+
+
     </div>
 </div>
+
+
+<script>
+    document.getElementById("reportButton").onclick = function() {
+        var reportForm = document.getElementById("reportForm");
+
+        // Toggle visibility of the report form
+        if (reportForm.style.display === "none") {
+            reportForm.style.display = "block";
+        } else {
+            reportForm.style.display = "none";
+        }
+    };
+</script>
