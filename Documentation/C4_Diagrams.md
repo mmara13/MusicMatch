@@ -9,9 +9,37 @@ The System Context diagram shows MusicMatch and how it fits into the world aroun
 ![System Context Diagram](./system-diagram.JPG)
 
 ### Key Elements
-- **MusicMatch System**: Our core application that facilitates music-based connections
-- **Music Enthusiast Users**: Primary users seeking to connect through shared music interests
-- **Email System**: For user notifications and verifications
+
+**Users**:
+-  **Event Goer**: Searches for events like concerts or festivals
+-  **Chatter**: Joins genre-based or fan-based chats
+-  **Music Seeker**: Finds playlists based on mood or genre
+-  **Friend Seeker**: Sends and accepts friend requests
+-  **Admin**: Manages users and activities
+-  **Artist**: Uploads songs and albums
+
+
+### App System Components:
+
+- **Events System**
+- **Chatroom System**
+- **Playlist System**
+- **Friend Request System**
+- **Administration System**
+- **Song Administration System**
+
+
+### External Systems:
+
+- **Email System**: Handles user registration and verification
+
+
+### Key Relationships
+
+- Each user type interacts with their specific system component
+- App System communicates with Email System for user management
+- Each subsystem provides specialized functionality for different user types
+
 
 ## Container Diagram
 The Container diagram shows the high-level technical building blocks of the MusicMatch system.
