@@ -24,7 +24,12 @@ Uniquely matches people through the emotional connection of music preferences. I
 - [Diana Enache](https://github.com/DianaEnache)
 - [Mara Spataru](https://github.com/mmara13)
 - [Julia Grasu](https://github.com/JuliaG03)
-- [Andreea Capitanu](https://github.com/CapitanuAndreea)
+- [Andreea Capitanu](https://github.com/CapitanuAndreea)\
+
+
+## Our Trello 🎯
+
+Armed with post-its, checklists, and an endless supply of coffee ☕, we dove into the magical world of Trello boards to keep our development journey on track. From "To Do" to "Done" (with quite a few pit stops at "In Progress" 😅), this board has been our trusty companion through brainstorming sessions, coding marathons, and those "wait, what were we supposed to do again?" moments. Check out how we transformed chaos into organized chaos [here](https://trello.com/b/faJf3xvU/codettes)!
 
 ## Setup
 After cloning, install SignalR client library:
