@@ -33,3 +33,28 @@ After cloning, install SignalR client library:
 3. Provider: unpkg
 4. Library: @microsoft/signalr@latest
 5. Target Location: wwwroot/lib/microsoft/signalr/
+
+# Project Documentation 📚
+
+## Demo
+Experience our application in action through our comprehensive demo video - [watch it here](./demo.md).
+
+## Product Overview
+Discover how our final product evolved and matched our initial vision - [read more here](./product-overview.md).
+
+## Architecture Description
+### C4 Model Diagrams
+Explore our architectural decisions through detailed C4 model diagrams:
+- System Context, Container, and Component diagrams are available in our [architecture documentation](./c4-diagrams.md).
+
+### Non-Functional Requirements
+Learn about our non-functional requirements and their architectural solutions - [view details here](./Documentation/Non-Functional-Requirements(NFRs).pdf). 
+
+## Quality Assurance
+Dive into our testing strategy, including objectives, processes, and results - [explore our QA documentation](./Documentation/Quality-Assurance-Testing.pdf).
+
+## Security Analysis
+Understand our security risks assessment and mitigation strategies - [read the security analysis here](./Documentation/Security-Analysis.pdf).
+
+## CI/CD Pipeline
+Learn about our development environments and deployment processes - [view CI/CD documentation here](./Documentation/Environment-Configuration&Deployment.pdf).
