@@ -24,7 +24,7 @@ Uniquely matches people through the emotional connection of music preferences. I
 - [Diana Enache](https://github.com/DianaEnache)
 - [Mara Spataru](https://github.com/mmara13)
 - [Julia Grasu](https://github.com/JuliaG03)
-- [Andreea Capitanu](https://github.com/CapitanuAndreea)\
+- [Andreea Capitanu](https://github.com/CapitanuAndreea)
 
 
 ## Our Trello 🎯
