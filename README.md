@@ -45,7 +45,7 @@ After cloning, install SignalR client library:
 Experience our application in action through our comprehensive demo video - [watch it here](./demo.md).
 
 ## Product Overview
-Discover how our final product evolved and matched our initial vision - [read more here](./Synthesis-of-the-Product-Result.pdf).
+Discover how our final product evolved and matched our initial vision - [read more here](./Documentation/Synthesis-of-the-Product-Result.pdf).
 
 ## Architecture Description
 ### C4 Model Diagrams
