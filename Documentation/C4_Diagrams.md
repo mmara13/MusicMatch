@@ -6,12 +6,11 @@ This document presents the architectural views of MusicMatch using the C4 model 
 ## System Context Diagram
 The System Context diagram shows MusicMatch and how it fits into the world around it.
 
-![System Context Diagram](./system-diagram.png)
+![System Context Diagram](./system-diagram.JPG)
 
 ### Key Elements
 - **MusicMatch System**: Our core application that facilitates music-based connections
 - **Music Enthusiast Users**: Primary users seeking to connect through shared music interests
-- **Spotify API**: External system for music data and playlist management
 - **Email System**: For user notifications and verifications
 
 ## Container Diagram
