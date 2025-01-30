@@ -12,6 +12,13 @@
             <input type="text" name="searchString" class="form-control w-full px-3 py-2 rounded-l-lg" placeholder="Search artists...">
             <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-lg">Search</button>
         </form>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow">
+                Add New Genre
+            </a>
+        }
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
