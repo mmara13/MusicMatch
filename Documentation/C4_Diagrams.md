@@ -38,7 +38,7 @@ The Container diagram shows the high-level technical building blocks of the Musi
 ## Component Diagram
 The Component diagram shows the main components within our container.
 
-![Component Diagram](./component-diagram.png)
+![Component Diagram](./Component_Diagram.png)
 
 ### Key Components
 - **Users Component**: Manages users and implements moderation for administrators
