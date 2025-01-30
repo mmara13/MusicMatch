@@ -50,7 +50,7 @@ Discover how our final product evolved and matched our initial vision - [read mo
 ## Architecture Description
 ### C4 Model Diagrams
 Explore our architectural decisions through detailed C4 model diagrams:
-- System Context, Container, and Component diagrams are available in our [architecture documentation](./c4-diagrams.md).
+- System Context, Container, and Component diagrams are available in our [architecture documentation](./C4_Diagrams.md).
 
 ### Non-Functional Requirements
 Learn about our non-functional requirements and their architectural solutions - [view details here](./Documentation/Non-Functional-Requirements(NFRs).pdf). 
