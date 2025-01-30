@@ -42,7 +42,7 @@ After cloning, install SignalR client library:
 # Project Documentation 📚
 
 ## Demo
-Experience our application in action through our comprehensive demo video - [watch it here]([(https://drive.google.com/drive/folders/1nuQgkUZj4D-OfMl6nnkfDGe3a4K4mdVL?usp=sharing)).
+Experience our application in action through our comprehensive demo video - [watch it here](https://drive.google.com/drive/folders/1nuQgkUZj4D-OfMl6nnkfDGe3a4K4mdVL?usp=sharing).
 
 ## Product Overview
 Discover how our final product evolved and matched our initial vision - [read more here](./Documentation/Synthesis-of-the-Product-Result.pdf).
