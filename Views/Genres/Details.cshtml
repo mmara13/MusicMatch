@@ -1,17 +1,33 @@
 ﻿@model MusicMatch.Models.Genre
 
-<h2>@Model.Name</h2>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+                <div>
+                    <h1 class="text-4xl font-bold text-white mb-4">@Model.Name</h1>
+                    <p><strong>Description:</strong> @Model.Description</p>
+                </div>
+                <div class="mt-2">
+                    <h2 class="text-2xl font-bold text-white mb-4">Songs</h2>
+                    <ul class="list-disc list-inside text-gray-300">
+                        @foreach (var song in Model.Songs.Take(10))
+                        {
+                            <li><a asp-action="Details" asp-controller="Songs" asp-route-id="@song.Id" class="text-gray-300 hover:text-gray-200">@song.Title</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-<div>
-    <strong>Description:</strong> @Model.Description
+        <div class="bg-gray-900 p-4 flex justify-between items-center">
+            <div class="flex space-x-4">
+                <a asp-action="Index" class="text-gray-400 hover:text-gray-300">Back to List</a>
+                <a asp-action="Edit" asp-route-id="@Model.Id"
+                   class="text-yellow-400 hover:text-yellow-300">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model.Id"
+                   class="text-red-400 hover:text-red-300">Delete</a>
+            </div>
+        </div>
+    </div>
 </div>
-
-<a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
-
-
-@if (User.IsInRole("Admin"))
-{
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
-}

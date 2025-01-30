@@ -1,40 +1,54 @@
-﻿@model List<MusicMatch.Models.UserReport>
-
-<h1>User Reports</h1>
-
-@if (!Model.Any())
-{
-    <p>No reports found.</p>
+﻿@model List<Genre>
+@{
+    ViewData["Title"] = "Manage Genres";
+    var notifications = ViewBag.Notifications as List<Notification> ?? new List<Notification>();
 }
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Reported By</th>
-                <th>Reason</th>
-                <th>Reported At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var report in Model)
-            {
-                <tr>
-                    <td>@report.ReportedUser.UserName</td>
-                    <td>@report.ReportedBy.UserName</td>
-                    <td>@report.Reason</td>
-                    <td>@report.ReportedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@report.Id" class="btn btn-info btn-sm">Details</a>
-                        <a asp-action="Resolve" asp-route-id="@report.Id" class="btn btn-success btn-sm">Resolve</a>
-                        <a asp-action="Delete" asp-route-id="@report.Id" class="btn btn-danger btn-sm">Delete</a>
-                        <a asp-action="Details" asp-route-id="@report.ReportedUserId" class="btn btn-info">View</a>
 
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-white">Manage Genres</h1>
+
+    <div class="mb-4">
+        <form asp-action="Index" method="get" class="flex mb-4">
+            <input type="text" name="searchString" class="form-control w-full px-3 py-2 rounded-l-lg" placeholder="Search artists...">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-lg">Search</button>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var genre in Model)
+        {
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-white mb-2">@genre.Name</h2>
+
+                    <div class="flex justify-between items-center mt-4">
+                        <a asp-action="Details" asp-route-id="@genre.Id"
+                           class="text-blue-400 hover:text-blue-300">View Details</a>
+
+                        <div class="flex space-x-2">
+                            <a asp-action="Edit" asp-route-id="@genre.Id"
+                               class="text-green-400 hover:text-green-300">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@genre.Id"
+                               class="text-red-400 hover:text-red-300">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center text-gray-500 py-8">
+            <p>No genres found.</p>
+        </div>
+    }
+
+    @if (notifications.Any())
+    {
+        <div class="mt-8 bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-4 text-white">Recent Notifications</h2>
+            @await Html.PartialAsync("_NotificationsList", notifications)
+        </div>
+    }
+</div>
