@@ -63,3 +63,13 @@ Understand our security risks assessment and mitigation strategies - [read the s
 
 ## CI/CD Pipeline
 Learn about our development environments and deployment processes - [view CI/CD documentation here](./Documentation/Environment-Configuration&Deployment.pdf).
+
+## Testing 🧪
+
+Our testing suite for **MusicMatch** ensures that all components are functioning as expected and that the application remains stable. The full details of the testing strategy, including specific tests for entity creation, can be found in the [MusicMatch Application Testing](./Tests/Testing.md) document.
+
+### Running the Tests
+To run the tests, follow the guidelines outlined in the testing document.
+
+For further details, refer to the testing documentation linked above.
+
