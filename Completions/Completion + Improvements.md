@@ -3,6 +3,8 @@
 ## 1. Automated Testing Implementation with Selenium
 We've enhanced our testing approach by also implementing Selenium E2E testing alongside our existing testing methods. This addition provides automated verification of critical user flows and admin functionalities.
 
+***Please note that the Email Verification system was temporarily disabled just so that we were able to run the tests without exiting our application!***
+
 You can view our live testing results [here](https://drive.google.com/drive/folders/1vgYiiV-F5lZbO9EMn_nejsJKz43GUrdB?usp=drive_link) or check out our full documentation on the Selenium testing we performed [here](./SeleniumTesting.md).
 
 ### Key Features
