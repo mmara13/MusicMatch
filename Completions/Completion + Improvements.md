@@ -3,6 +3,8 @@
 ## 1. Automated Testing Implementation with Selenium
 We've enhanced our testing approach by also implementing Selenium E2E testing alongside our existing testing methods. This addition provides automated verification of critical user flows and admin functionalities.
 
+You can view our live testing results [here](https://drive.google.com/drive/folders/1vgYiiV-F5lZbO9EMn_nejsJKz43GUrdB?usp=drive_link) or checkout our full documentation on the Selenium testing we performed [here](./SeleniumTesting.md).
+
 ### Key Features
 - Automated testing of core user journeys
 - Real-time validation of admin workflows
@@ -13,10 +15,11 @@ We've enhanced our testing approach by also implementing Selenium E2E testing al
 - Admin Genre Creation
 - Admin Artist Creation
 
-You can view our live testing results [here](https://drive.google.com/drive/folders/1vgYiiV-F5lZbO9EMn_nejsJKz43GUrdB?usp=drive_link) or checkout our full documentation on the Selenium testing we performed [here](./SeleniumTesting.md).
 
 ## 2. Performance Optimization
-After analyzing our Lighthouse report, we implemented several optimizations that improved our performance score from 47 to 96!:
+After analyzing our Lighthouse report, we implemented several optimizations that improved our performance score from 47 to 96🥳:
+
+See how we achieved this reading our [Performance Optimization doc](./Performance-Optimization.md).
 
 ### Key Improvements
 - Implemented bundling and minification using WebOptimizer
@@ -29,7 +32,7 @@ These changes resulted in:
 - Better overall performance metrics
 
 ## 3. Comprehensive Functional Testing Plan
-We've developed and implemented a detailed functional testing ([check it out!](./Functional-Testing-Plan.pdf) plan that covers:
+We've developed and implemented a detailed functional testing plan ([check it out!](./Functional-Testing-Plan.pdf) that covers:
 
 ### Test Categories
 - User Account Management
@@ -45,7 +48,7 @@ Each test case includes:
 - Success criteria
 
 ## 4. Enhanced Non-Functional Requirements Documentation
-We've better documented our non-functional requirements and the solutions we offered:
+We've documented better our non-functional requirements and the solutions we offered:
 
 You can see our doc [here](./Non-functional_Requirements&Solutions.pdf).
 
