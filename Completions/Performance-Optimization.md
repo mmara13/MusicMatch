@@ -42,7 +42,7 @@ We optimized our resource loading by updating our asset references to use the bu
 ```
 
 
-##Conclusion
+## Conclusion
 These optimizations resulted in:
 
 - Reduced number of HTTP requests
