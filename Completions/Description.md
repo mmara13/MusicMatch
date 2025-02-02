@@ -3,7 +3,7 @@
 ## Overview
 Selenium WebDriver tests for MusicMatch application, simulating real user interactions and admin workflows.
 
-On top of the functional testing (our plan can be seen [here](./Completions/Functional-Testing-Plan.pdf)), we performed testing using Selenium. 
+On top of the functional testing (our plan can be seen [here](./Functional-Testing-Plan.pdf)), we performed testing using Selenium. 
 
 ## Live Testing
 You can see how our application was tested and the results live by watching [this video](https://drive.google.com/drive/folders/1vgYiiV-F5lZbO9EMn_nejsJKz43GUrdB?usp=drive_link).
