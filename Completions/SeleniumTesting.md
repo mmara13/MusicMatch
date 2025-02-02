@@ -5,8 +5,11 @@ Selenium WebDriver tests for MusicMatch application, simulating real user intera
 
 On top of the functional testing (our plan can be seen [here](./Functional-Testing-Plan.pdf)), we performed testing using Selenium. 
 
+***Please note that the Email Verification system was temporarily disabled just so that we were able to run the tests without exiting our application!***
+
 ## Live Testing
 You can see how our application was tested and the results live by watching [this video](https://drive.google.com/drive/folders/1vgYiiV-F5lZbO9EMn_nejsJKz43GUrdB?usp=drive_link).
+
 
 ## Technology Stack
 - **Testing Framework**: Jest
