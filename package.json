@@ -1,0 +1,26 @@
+{
+  "name": "software-engineering-product-the-codettes",
+  "version": "1.0.0",
+  "description": "**FOR**  \r Music enthusiasts who want to build meaningful friendships.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@types/node": "^22.13.0",
+    "dotenv": "^16.4.7",
+    "est": "^0.2.1-alpha",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
+    "selenium-webdriver": "^4.28.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
