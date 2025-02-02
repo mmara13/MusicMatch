@@ -6,6 +6,7 @@ using MusicMatch.Data;
 using MusicMatch.Hubs;
 using MusicMatch.Models;
 using MusicMatch.Services;
+using WebOptimizer; //to improve performance using lighthouse analysis
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,8 +45,39 @@ builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IMyEmailSender, EmailService>();
 builder.Services.AddSignalR();
 builder.Services.AddScoped<ReportService>();
+
+
+//services to improve performance using lighthouse analysis
+builder.Services.AddControllersWithViews();
+builder.Services.AddWebOptimizer();
+
+builder.Services.AddControllersWithViews();
+// bundling service for CSS files for optimization purposes
+builder.Services.AddWebOptimizer(pipeline =>
+{
+    // for css
+    pipeline.AddCssBundle("/css/bundle.css",
+        "css/site.css",
+        "css/events.css",
+        "css/chatroom.css",
+        "css/artist.css",
+        "css/eventDetails.css"
+    );
+});
 var app = builder.Build();
 
+
+// middleware for performance optimization
+app.UseWebOptimizer();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append(
+            "Cache-Control", "public,max-age=604800"
+        );
+    }
+});
 
 
 app.MapHub<NotificationHub>("/notificationHub");
