@@ -32,7 +32,7 @@ These changes resulted in:
 - Better overall performance metrics
 
 ## 3. Comprehensive Functional Testing Plan
-We've developed and implemented a detailed functional testing plan ([check it out!](./Functional-Testing-Plan.pdf) that covers:
+We've developed and implemented a detailed functional testing plan ([check it out!](./Functional-Testing-Plan.pdf)) that covers:
 
 ### Test Categories
 - User Account Management
