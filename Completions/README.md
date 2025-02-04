@@ -63,3 +63,13 @@ You can see our doc [here](./Non-functional_Requirements&Solutions.pdf).
 - **Maintainability**: 30-second recovery time, 99.9% update consistency
 
 These improvements have significantly enhanced our application's reliability, performance, and user experience while establishing a robust foundation for future development and testing.
+
+## 5. Improved Diagrams
+
+### System Diagram
+
+![System Diagram](./SystemDiagram.jpg)
+
+### Container Diagram 
+
+![Container Diagram](./ContainerDiagram.jpg)
