@@ -73,3 +73,7 @@ These improvements have significantly enhanced our application's reliability, pe
 ### Container Diagram 
 
 ![Container Diagram](./ContainerDiagram.jpg)
+
+### Component Diagram
+
+![Component Diagram](./ComponentDiagram.jpg)
